@@ -1,21 +1,5 @@
-# TanStack Start + shadcn/ui
+# BudapestLIVE
 
-This is a template for a new TanStack Start project with React, TypeScript, and shadcn/ui.
+A hobby project that aims to visualize real-time public transportation data in Budapest, Hungary. Built using React and TypeScript.
 
-## Adding components
-
-To add components to your app, run the following command:
-
-```bash
-npx shadcn@latest add button
-```
-
-This will place the ui components in the `components` directory.
-
-## Using components
-
-To use the components in your app, import them as follows:
-
-```tsx
-import { Button } from "@/components/ui/button";
-```
+Heavily inspired by [BudapestGO Web](https://go.bkk.hu).
