@@ -18,6 +18,7 @@ const config = defineConfig({
     tanstackStart(),
     viteReact(),
   ],
+  base: "/bp-live/",
 })
 
 export default config
