@@ -43,7 +43,7 @@ jobs:
       - name: Build
         run: pnpm run build
         env:
-          VITE_FUTAR_API_KEY: ${{ vars.VITE_FUTAR_API_KEY }}        
+          VITE_FUTAR_API_KEY: ${{ vars.VITE_FUTAR_API_KEY }}    
       - name: Setup Pages
         uses: actions/configure-pages@v5
       - name: Upload artifact

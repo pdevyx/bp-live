@@ -25,7 +25,7 @@ function RootComponent() {
         <Outlet />
       </ThemeProvider>
 
-       <TanStackRouterDevtools position="bottom-right" />
+       {/* <TanStackRouterDevtools position="bottom-right" /> */}
     </QueryClientProvider>
   )
 }
