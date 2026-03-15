@@ -1,6 +1,6 @@
 import type React from "react";
 
-export default function Pajzs({
+export default function RouteLabel({
     text,
     color,
     ...props

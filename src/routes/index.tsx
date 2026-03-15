@@ -15,15 +15,13 @@ function App() {
             <span>Budapest<span className="font-bold">LIVE</span></span>
           </div>
           <div className="flex items-center gap-2">
-          {/*   <span>Menü 1</span>
-            <span>Menü 2</span> */}
             <ModeToggle />
           </div>
         </div>
       </div>
       <Map center={[19.0551266, 47.4985022]} zoom={11} className="grow" >
         <MapControls showLocate={true} showCompass={true} />
-        <Locations/>
+        <Locations />
       </Map>
     </div>
   )

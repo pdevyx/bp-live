@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import type { Vehicle } from "./locations";
-import Pajzs from "./route-label";
+import RouteLabel from "./route-label";
 import { Card, CardContent } from "./ui/card";
 import { MarkerTooltip, type MarkerTooltipProps } from "./ui/map";
 import { Accessibility } from "lucide-react";
@@ -25,7 +25,7 @@ export function VehicleCard({ vehicleData }: { vehicleData: Vehicle }) {
                     <div className="h-6 w-6 rounded-full" style={{ "backgroundColor": `#${vehicle?.route?.style?.vehicleIcon.color ?? vehicle?.route?.style?.color}` }}>
                         {/*            {vehicle?.route?.type} */}
                     </div>
-                    <Pajzs text={vehicle?.route?.shortName ?? "?"} color={{
+                    <RouteLabel text={vehicle?.route?.shortName ?? "?"} color={{
                         "backgroundColor": `#${vehicle?.route?.style?.vehicleIcon.color ?? vehicle?.route?.style?.color}`,
                         "color": `#${vehicle?.route?.style?.vehicleIcon.secondaryColor}`
                     }} />

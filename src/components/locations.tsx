@@ -1,10 +1,10 @@
 import type { components } from "@/lib/api/v1";
-import { useMap } from "./ui/map";
-import { useEffect, useMemo, useState } from "react";
-import { VehicleCard } from "./vehicle-tooltip";
 import { $api } from "@/routes/__root";
+import { useEffect, useMemo, useState } from "react";
 import { useDebounce } from "use-debounce";
 import { MarkersLayer } from "./markers-layer";
+import { useMap } from "./ui/map";
+import { VehicleCard } from "./vehicle-tooltip";
 
 export type VehicleStyle = {
     icon: {
@@ -38,9 +38,6 @@ export default function Locations() {
     const [bounds, setBounds] = useState<BoundingBox | null>(null)
 
     const [debouncedBounds] = useDebounce(bounds, 500)
-
-
-
 
     useEffect(() => {
         if (!map) return
@@ -89,9 +86,9 @@ export default function Locations() {
         },
         {
             refetchInterval: 10000,
+            placeholderData: (prev) => prev
         }
     );
-
 
     const vehicles = useMemo(() => {
         const vehicles = data?.data.list ?? []
