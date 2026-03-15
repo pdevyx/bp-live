@@ -1,8 +1,24 @@
 import { HeadContent, Scripts, createRootRoute } from "@tanstack/react-router"
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools"
 import { TanStackDevtools } from "@tanstack/react-devtools"
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 
 import appCss from "../styles.css?url"
+import { ThemeProvider } from "@/components/theme-provider"
+
+import createFetchClient from "openapi-fetch";
+
+import createClient from "openapi-react-query";
+import type { paths } from "@/lib/api/v1"
+
+const queryClient = new QueryClient()
+
+const fetchClient = createFetchClient<paths>({
+    baseUrl: "https://futar.bkk.hu/api/query/v1/ws",
+});
+
+export const $api = createClient(fetchClient);
+
 
 export const Route = createRootRoute({
   head: () => ({
@@ -15,7 +31,7 @@ export const Route = createRootRoute({
         content: "width=device-width, initial-scale=1",
       },
       {
-        title: "TanStack Start Starter",
+        title: "BudapestLIVE",
       },
     ],
     links: [
@@ -35,18 +51,23 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         <HeadContent />
       </head>
       <body>
-        {children}
-        <TanStackDevtools
-          config={{
-            position: "bottom-right",
-          }}
-          plugins={[
-            {
-              name: "Tanstack Router",
-              render: <TanStackRouterDevtoolsPanel />,
-            },
-          ]}
-        />
+        <QueryClientProvider client={queryClient}>
+          <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
+            {children}
+          </ThemeProvider>
+
+          <TanStackDevtools
+            config={{
+              position: "bottom-right",
+            }}
+            plugins={[
+              {
+                name: "Tanstack Router",
+                render: <TanStackRouterDevtoolsPanel />,
+              },
+            ]}
+          />
+        </QueryClientProvider>
         <Scripts />
       </body>
     </html>

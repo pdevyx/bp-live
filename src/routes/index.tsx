@@ -1,19 +1,30 @@
 import { createFileRoute } from "@tanstack/react-router"
-import { Button } from "@/components/ui/button"
+import { Map, MapControls } from "@/components/ui/map"
+import { ModeToggle } from "@/components/mode-toggle"
+import Locations from "@/components/locations"
 
 export const Route = createFileRoute("/")({ component: App })
 
 function App() {
+
   return (
-    <div className="flex min-h-svh p-6">
-      <div className="flex max-w-md min-w-0 flex-col gap-4 text-sm leading-loose">
-        <div>
-          <h1 className="font-medium">Project ready!</h1>
-          <p>You may now add components and start building.</p>
-          <p>We&apos;ve already added the button component for you.</p>
-          <Button className="mt-2">Button</Button>
+    <div className="relative flex flex-col min-h-svh w-full   ">
+      <div className="absolute flex items-center z-10 my-2 w-full pointer-none">
+        <div className="bg- flex items-center p-4 bg-background/90 rounded-xl gap-16 mx-auto">
+          <div className="flex items-center text-bkk-purple">
+            <span>Budapest<span className="font-bold">LIVE</span></span>
+          </div>
+          <div className="flex items-center gap-2">
+          {/*   <span>Menü 1</span>
+            <span>Menü 2</span> */}
+            <ModeToggle />
+          </div>
         </div>
       </div>
+      <Map center={[19.0551266, 47.4985022]} zoom={11} className="grow" >
+        <MapControls showLocate={true} showCompass={true} />
+        <Locations/>
+      </Map>
     </div>
   )
 }
