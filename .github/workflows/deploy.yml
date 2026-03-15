@@ -40,6 +40,9 @@ jobs:
           cache: 'pnpm'
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
+      - name: Set version
+        id: vars
+        run: echo "VITE_APP_VERSION=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
       - name: Build
         run: pnpm run build
         env:

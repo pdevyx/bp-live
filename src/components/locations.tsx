@@ -75,7 +75,7 @@ export default function Locations() {
 
                 },
                 query: {
-                    appVersion: "1.0.0",
+                    appVersion: import.meta.env.VITE_APP_VERSION ?? "1.0.0",
                     version: "4",
                     key: import.meta.env.VITE_FUTAR_API_KEY,
                     ...debouncedBounds
