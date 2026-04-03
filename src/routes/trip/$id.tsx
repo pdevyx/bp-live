@@ -1,12 +1,12 @@
-import StopsLayer from '@/components/stops'
+import StopsLayer from '@/features/stops'
 import { createFileRoute } from '@tanstack/react-router'
 import { $api } from '../__root';
 import { FUTAR_API_VERSION } from '@/lib/constants';
 import { useMemo } from 'react';
 import { decode, encode } from "@googlemaps/polyline-codec";
 import { MapRoute } from '@/components/ui/map';
-import VehiclesLayer from '@/components/vehicles';
-import TripDetails from '@/components/trip-details';
+import VehiclesLayer from '@/features/vehicles';
+import TripDetails from '@/features/trip-details';
 
 export const Route = createFileRoute('/trip/$id')({
   component: RouteComponent,

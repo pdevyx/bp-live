@@ -1,7 +1,7 @@
 import type { Vehicle } from "@/lib/types";
-import { useLayer } from "./context";
-import { MarkersLayer } from "./markers-layer";
-import { VehicleCard } from "./vehicle-tooltip";
+import { useLayer } from "../providers/context";
+import { MarkersLayer } from "../components/markers-layer";
+import { VehicleCard } from "../components/vehicle-tooltip";
 import type { components } from "@/lib/api/v1";
 
 export default function StopsLayer() {

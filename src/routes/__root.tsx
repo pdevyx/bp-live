@@ -1,14 +1,14 @@
 import { Link, Outlet, createRootRoute } from "@tanstack/react-router"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
-import { ThemeProvider } from "@/components/theme-provider"
+import { ThemeProvider } from "@/providers/theme-provider"
 import createFetchClient from "openapi-fetch";
 import createClient from "openapi-react-query";
 import type { paths } from "@/lib/api/v1"
 import { TanStackRouterDevtools } from "node_modules/@tanstack/react-router-devtools/dist/esm/TanStackRouterDevtools"
 import { Button } from "@/components/ui/button";
 import { Map, MapControls } from "@/components/ui/map"
-import { ModeToggle } from "@/components/mode-toggle";
-import { LayerContextProvider } from "@/components/context";
+import { ModeToggle } from "@/components/layout/mode-toggle";
+import { LayerContextProvider } from "@/providers/context";
 
 const queryClient = new QueryClient()
 

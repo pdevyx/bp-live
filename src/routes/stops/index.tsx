@@ -1,4 +1,4 @@
-import StopsLayer from '@/components/stops'
+import StopsLayer from '@/features/stops'
 import { createFileRoute } from '@tanstack/react-router'
 
 export const Route = createFileRoute('/stops/')({

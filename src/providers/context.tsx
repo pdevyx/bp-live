@@ -1,7 +1,7 @@
 import type { BoundingBox, Vehicle } from "@/lib/types";
 import { $api } from "@/routes/__root";
 import React, { createContext, useContext, useEffect, useMemo, useState } from "react";
-import { useMap } from "./ui/map";
+import { useMap } from "../components/ui/map";
 import { FUTAR_API_VERSION } from "@/lib/constants";
 import type { components } from "@/lib/api/v1";
 import { useDebounce } from "use-debounce";

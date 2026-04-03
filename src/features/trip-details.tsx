@@ -1,10 +1,10 @@
 import { XIcon } from "lucide-react";
-import { Button } from "./ui/button";
+import { Button } from "../components/ui/button";
 import { Link } from "@tanstack/react-router";
 import type { components } from "@/lib/api/v1";
 import { fromUnixTime, format } from 'date-fns';
 import { cn, vehicleFromTripResponse } from "@/lib/utils";
-import { VehicleCard } from "./vehicle-tooltip";
+import { VehicleCard } from "../components/vehicle-tooltip";
 
 export default function TripDetails({ data }: {
     data: components["schemas"]["TransitEntryWithReferencesTransitTripDetailsOTP"]
