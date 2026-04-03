@@ -4,15 +4,13 @@ import { ThemeProvider } from "@/providers/theme-provider"
 import createFetchClient from "openapi-fetch";
 import createClient from "openapi-react-query";
 import type { paths } from "@/lib/api/v1"
-import { TanStackRouterDevtools } from "node_modules/@tanstack/react-router-devtools/dist/esm/TanStackRouterDevtools"
-import { Button } from "@/components/ui/button";
 import { Map, MapControls } from "@/components/ui/map"
 import { ModeToggle } from "@/components/layout/mode-toggle";
-import { LayerContextProvider } from "@/providers/context";
+import { useMapBoundsSync } from "@/components/layout/use-map-bounds-sync";
 
-const queryClient = new QueryClient()
+export const queryClient = new QueryClient()
 
-const fetchClient = createFetchClient<paths>({
+export const fetchClient = createFetchClient<paths>({
   baseUrl: "https://futar.bkk.hu/api/query/v1/ws",
 });
 
@@ -22,7 +20,16 @@ export const Route = createRootRoute({
   component: RootComponent,
 })
 
+function AppMap() {
+  useMapBoundsSync();
+
+  return (
+      <Outlet />
+  );
+}
+
 function RootComponent() {
+   
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
@@ -34,11 +41,6 @@ function RootComponent() {
 
                 
               </div>
-              <div className="flex flex-row justify-between gap-2">
-
-                  <Link to="/$"><span>Home</span></Link>
-                  <Link to="/stops"><span>Stops</span></Link>
-                </div>
               <div className="flex items-center gap-2">
                 <ModeToggle />
               </div>
@@ -46,9 +48,7 @@ function RootComponent() {
           </div>
           <Map center={[19.0551266, 47.4985022]} zoom={15} className="grow" >
             <MapControls showLocate={true} showCompass={true} />
-            <LayerContextProvider>
-              <Outlet />
-            </LayerContextProvider>
+            <AppMap />
           </Map>
         </div>
 

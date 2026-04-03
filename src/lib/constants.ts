@@ -1,4 +1,4 @@
-const FUTAR_API_VERSION = "6"
+const FUTAR_API_VERSION = "5"
 
 
 export {

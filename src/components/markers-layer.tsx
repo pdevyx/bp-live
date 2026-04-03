@@ -10,7 +10,7 @@ type FeatureState<T> = {
 
 interface MarkersLayerProps<T> {
     data: GeoJSON.FeatureCollection | string;
-    onClick?: (properties: T) => void;
+    onClick?: (properties: FeatureState<T>) => void;
     renderTooltip?: (properties: T) => React.ReactNode;
     renderPopup?: (properties: T) => React.ReactNode;
     layerProps?: AddLayerObject;
@@ -51,7 +51,7 @@ export function MarkersLayer<T = any>({ data, onClick, renderTooltip, renderPopu
 
     const handleClick = useEffectEvent((e: MapMouseEvent & { features?: MapGeoJSONFeature[] }) => {
         if (onClick && e.features?.length) {
-            onClick(e.features[0].properties)
+            onClick(e.features[0].properties as T)
         }
         
         if (renderPopup) {
@@ -97,8 +97,6 @@ export function MarkersLayer<T = any>({ data, onClick, renderTooltip, renderPopu
                     "icon-image": ["get", "icon-image"],
                     "icon-allow-overlap": true,
                     "icon-ignore-placement": true,
-                    "icon-rotate": ["get", "bearing"],
-                    "icon-rotation-alignment": "map",
                 },
 
                 ...layerProps,

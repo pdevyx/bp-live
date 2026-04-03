@@ -1,8 +1,9 @@
 import { defineConfig } from "vite"
-import tanstackRouter, { TanStackRouterVite } from "@tanstack/router-plugin/vite"
+import tanstackRouter from "@tanstack/router-plugin/vite"
 import viteTsConfigPaths from "vite-tsconfig-paths"
 import tailwindcss from "@tailwindcss/vite"
 import react from '@vitejs/plugin-react'
+import svgr from "vite-plugin-svgr";
 
 const config = defineConfig({
   plugins: [
@@ -14,6 +15,7 @@ const config = defineConfig({
     }),
     tailwindcss(),
     react(),
+    svgr()
   ],
   base: "/bp-live/",
 })

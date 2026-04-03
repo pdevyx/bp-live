@@ -40,7 +40,46 @@
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
 
-   --bkk-purple: #4c0e5f;
+  --bkk-purple: #4c0e5f;
+  --success: #3cac61;
+  --alert-color: #FFD800;
+  --warning-color: #FFD400;
+  --info-color: #44B3D8;
+
+  --bkk-purple-faded: #845692;
+  --bkk-purple-faded-rgb: 132, 86, 146;
+  --bkk-gray: #5E6167;
+  --bkk-gray-rgb: 94, 98, 104;
+  --bkk-info: #E5481D;
+  --bkk-info-rgb: 230, 74, 31;
+  --bkk-teaching: #B1599E;
+  --bkk-teaching-rgb: 177, 89, 158;
+  --bkv-blue: #023E84;
+  --bkv-blue-rgb: 3, 62, 130;
+  --bkv-cyan: #007876;
+  --bkv-cyan-rgb: 0, 122, 120;
+  --bp-info: #131747;
+  --bp-info-rgb: 19, 24, 73;
+  --bp-blue: #19506E;
+  --bp-blue-rgb: 25, 79, 108;
+  --bp-gold: #CDAF87;
+  --bp-gold-rgb: 204, 174, 135;
+  --info-M: #000;
+  --info-D: #000;
+  --info-H: #000;
+  --info-M2: #E41F18;
+  --info-M3: #005CA5;
+  --info-M4: #4CA22F;
+  --info-H5: #821066;
+  --info-H6: #824B00;
+  --info-H7: #EE7203;
+  --info-H8-9: #ED677E;
+  --info-libego: #00874B;
+  --gsc-black: #1E1E1E;
+  --gsc-white: #FFF;
+  --gsc-bkk-gray: var(--bkk-gray);
+  --gsc-inactive: #A4A4A4;
+  --gsc-tavolsagi-busz: #C6C6C6;
 }
 
 .dark {
@@ -77,6 +116,46 @@
   --sidebar-ring: oklch(0.556 0 0);
 
   --bkk-purple: #b024db;
+  --success: #48be6f;
+  --alert-color: #FFD800;
+  --warning-color: #FFD400;
+  --info-color: #44B3D8;
+
+
+  --bkk-purple-faded: #845692;
+  --bkk-purple-faded-rgb: 132, 86, 146;
+  --bkk-gray: #5E6167;
+  --bkk-gray-rgb: 94, 98, 104;
+  --bkk-info: #E5481D;
+  --bkk-info-rgb: 230, 74, 31;
+  --bkk-teaching: #B1599E;
+  --bkk-teaching-rgb: 177, 89, 158;
+  --bkv-blue: #023E84;
+  --bkv-blue-rgb: 3, 62, 130;
+  --bkv-cyan: #007876;
+  --bkv-cyan-rgb: 0, 122, 120;
+  --bp-info: #131747;
+  --bp-info-rgb: 19, 24, 73;
+  --bp-blue: #19506E;
+  --bp-blue-rgb: 25, 79, 108;
+  --bp-gold: #CDAF87;
+  --bp-gold-rgb: 204, 174, 135;
+  --info-M: #000;
+  --info-D: #000;
+  --info-H: #000;
+  --info-M2: #E41F18;
+  --info-M3: #005CA5;
+  --info-M4: #4CA22F;
+  --info-H5: #821066;
+  --info-H6: #824B00;
+  --info-H7: #EE7203;
+  --info-H8-9: #ED677E;
+  --info-libego: #00874B;
+  --gsc-black: #1E1E1E;
+  --gsc-white: #FFF;
+  --gsc-bkk-gray: var(--bkk-gray);
+  --gsc-inactive: #A4A4A4;
+  --gsc-tavolsagi-busz: #C6C6C6;
 }
 
 @theme inline {
@@ -120,7 +199,9 @@
   --radius-2xl: calc(var(--radius) * 1.8);
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
+
   --color-bkk-purple: var(--bkk-purple);
+  --color-success: var(--success);
 }
 
 @layer base {
