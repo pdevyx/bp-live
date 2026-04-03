@@ -1,6 +1,7 @@
 import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
 import type { components } from "./api/v1";
+import type { Vehicle } from "./types";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -15,6 +16,27 @@ export type SpriteData = {
 
 export type SpriteSource = Partial<Record<components["schemas"]["TransitRoute"]["type"], SpriteData>>
 
+export function vehicleFromTripResponse(resp: components["schemas"]["TransitEntryWithReferencesTransitTripDetailsOTP"]) {
+  const vehicle = resp.entry.vehicle
+
+  const headsign = vehicle?.label;
+
+  const route: components["schemas"]["TransitRoute"] = resp.references?.routes?.[vehicle?.routeId ?? ""]
+
+  const trip: components["schemas"]["TransitTrip"] = resp?.entry
+
+  const tripId = trip?.id
+  const routeId = route?.id
+
+  return {
+    headsign,
+    tripId,
+    routeId,
+    vehicle,
+    route,
+    trip,
+  } satisfies Vehicle
+}
 
 export const SPRITES = {
   "BUS": {

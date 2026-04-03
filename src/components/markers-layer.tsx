@@ -1,121 +1,128 @@
-import { useEffect, useId, useState } from "react";
+import { useEffect, useEffectEvent, useId, useState } from "react";
 import { MapPopup, useMap } from "./ui/map";
-import type { CanvasSourceSpecification, GeoJSONSource, MapGeoJSONFeature, MapMouseEvent } from "maplibre-gl";
+import type { AddLayerObject, FilterSpecification, GeoJSONSource, LayerSpecification, MapGeoJSONFeature, MapMouseEvent } from "maplibre-gl";
 import { loadSprites } from "@/lib/utils";
 
-interface SelectedPoint {
-    id: number;
-    name: string;
-    category: string;
+type FeatureState<T> = {
+    properties: T;
     coordinates: [number, number];
-}
-
+} | null;
 
 interface MarkersLayerProps<T> {
     data: GeoJSON.FeatureCollection | string;
+    onClick?: (properties: T) => void;
     renderTooltip?: (properties: T) => React.ReactNode;
+    renderPopup?: (properties: T) => React.ReactNode;
+    layerProps?: AddLayerObject;
+    filter?: FilterSpecification;
 }
 
-export function MarkersLayer<T = any>({ data, renderTooltip }: MarkersLayerProps<T>) {
+export function MarkersLayer<T = any>({ data, onClick, renderTooltip, renderPopup, layerProps, filter }: MarkersLayerProps<T>) {
     const { map, isLoaded } = useMap();
     const id = useId();
     const sourceId = `markers-source-${id}`;
     const layerId = `markers-layer-${id}`;
 
-    const [selectedPoint, setSelectedPoint] = useState<SelectedPoint | null>(
-        null
-    );
-
-    // State for the hovered feature
-    const [hoveredFeature, setHoveredFeature] = useState<{
-        properties: T;
-        coordinates: [number, number];
-    } | null>(null);
+    const [selectedFeature, setSelectedFeature] = useState<FeatureState<T>>(null);
+    const [hoveredFeature, setHoveredFeature] = useState<FeatureState<T>>(null);
 
     useEffect(() => {
-        const src = map?.getSource(sourceId) satisfies GeoJSONSource | undefined
+        const src = map?.getSource(sourceId) as GeoJSONSource | undefined;
         if (src) {
-            src.setData(data)
+            console.log("updateData")
+            src.setData(data);
         }
-    }, [data])
+    }, [data, map, sourceId]);
+
+    const handleFeatureEvent = useEffectEvent((
+        e: MapMouseEvent & { features?: MapGeoJSONFeature[] },
+        setter: React.Dispatch<React.SetStateAction<FeatureState<T>>>
+    ) => {
+        if (!e.features?.length) return;
+
+        const feature = e.features[0];
+        const coordinates = (feature.geometry as GeoJSON.Point).coordinates as [number, number];
+
+        setter({
+            properties: feature.properties as T,
+            coordinates,
+        });
+    });
+
+    const handleClick = useEffectEvent((e: MapMouseEvent & { features?: MapGeoJSONFeature[] }) => {
+        if (onClick && e.features?.length) {
+            onClick(e.features[0].properties)
+        }
+        
+        if (renderPopup) {
+            handleFeatureEvent(e, setSelectedFeature);
+        }
+
+        
+    });
+
+    const handleMouseEnter = useEffectEvent((e: MapMouseEvent & { features?: MapGeoJSONFeature[] }) => {
+        if (!map) return
+        map.getCanvas().style.cursor = "pointer";
+        if (renderTooltip) {
+            handleFeatureEvent(e, setHoveredFeature);
+        }
+    });
+
+    const handleMouseLeave = useEffectEvent(() => {
+        if (!map) return
+        map.getCanvas().style.cursor = "";
+        if (renderTooltip) {
+            setHoveredFeature(null);
+        }
+    });
 
     useEffect(() => {
         if (!map || !isLoaded) return;
 
-
-
-        map.addSource(sourceId, {
-            type: "geojson",
-            data: data,
-        });
-
-        map.addLayer({
-            id: layerId,
-            type: "symbol",
-            source: sourceId,
-            layout: {
-                "icon-image": ["get", "icon-image"],
-                "icon-allow-overlap": true,
-                "icon-ignore-placement": true,
-            }
-        });
-
-        const handleClick = (
-            e: maplibregl.MapMouseEvent & {
-                features?: maplibregl.MapGeoJSONFeature[];
-            }
-        ) => {
-            if (!e.features?.length) return;
-
-            const feature = e.features[0];
-            const coords = (feature.geometry as GeoJSON.Point).coordinates as [
-                number,
-                number
-            ];
-
-            setSelectedPoint({
-                id: feature.properties?.id,
-                name: feature.properties?.name,
-                category: feature.properties?.category,
-                coordinates: coords,
+        if (!map.getSource(sourceId)) {
+            console.log("addSource")
+            map.addSource(sourceId, {
+                type: "geojson",
+                data: data,
             });
-        };
+        }
 
-        // TODO: REVIEW
-        const handleMouseEnter = (e: MapMouseEvent & { features?: MapGeoJSONFeature[] }) => {
-            map.getCanvas().style.cursor = "pointer";
+        if (!map.getLayer(layerId)) {
+            map.addLayer({
+                id: layerId,
+                source: sourceId,
+                type: "symbol",
+                layout: {
+                    "icon-image": ["get", "icon-image"],
+                    "icon-allow-overlap": true,
+                    "icon-ignore-placement": true,
+                    "icon-rotate": ["get", "bearing"],
+                    "icon-rotation-alignment": "map",
+                },
 
-            if (e.features?.length) {
-                const feature = e.features[0];
-                const coordinates = (feature.geometry as GeoJSON.Point).coordinates as [number, number];
+                ...layerProps,
 
-                // Ensure properties are treated as the generic type T
-                setHoveredFeature({
-                    // @ts-expect-error MapLibre types vs Generic T
-                    properties: feature.properties,
-                    coordinates
-                });
+            });
+
+            if (filter) {
+                map.setFilter(layerId, filter)
             }
-        };
 
-        const handleMouseLeave = () => {
-            map.getCanvas().style.cursor = "";
-            setHoveredFeature(null);
-        };
-        // TODO: END REVIEW
+            loadSprites(map);
+        }
 
         map.on("click", layerId, handleClick);
         map.on("mouseenter", layerId, handleMouseEnter);
         map.on("mouseleave", layerId, handleMouseLeave);
 
-        loadSprites(map)
 
         return () => {
             map.off("click", layerId, handleClick);
             map.off("mouseenter", layerId, handleMouseEnter);
             map.off("mouseleave", layerId, handleMouseLeave);
 
-            try {
+             try {
                 if (map.getLayer(layerId)) map.removeLayer(layerId);
                 if (map.getSource(sourceId)) map.removeSource(sourceId);
             } catch {
@@ -124,24 +131,25 @@ export function MarkersLayer<T = any>({ data, renderTooltip }: MarkersLayerProps
         };
     }, [map, isLoaded, sourceId, layerId]);
 
+    useEffect(() => {
+        if (map?.getLayer(layerId)) {
+            console.log("setFilter")
+            map.setFilter(layerId, filter)
+        }
+    }, [map, layerId, filter])
+
     return (
         <>
-            {selectedPoint && (
+            {selectedFeature && renderPopup && (
                 <MapPopup
-                    longitude={selectedPoint.coordinates[0]}
-                    latitude={selectedPoint.coordinates[1]}
-                    onClose={() => setSelectedPoint(null)}
+                    longitude={selectedFeature.coordinates[0]}
+                    latitude={selectedFeature.coordinates[1]}
+                    onClose={() => setSelectedFeature(null)}
                     closeOnClick={false}
-                    focusAfterOpen={false}
                     offset={10}
                     closeButton
                 >
-                    <div className="min-w-[140px]">
-                        <p className="font-medium">{selectedPoint.name}</p>
-                        <p className="text-sm text-muted-foreground">
-                            {selectedPoint.category}
-                        </p>
-                    </div>
+                    {renderPopup(selectedFeature.properties)}
                 </MapPopup>
             )}
 

@@ -1,21 +1,33 @@
 import { useMemo } from "react";
-import type { Vehicle } from "./locations";
 import RouteLabel from "./route-label";
 import { Card, CardContent } from "./ui/card";
 import { MarkerTooltip, type MarkerTooltipProps } from "./ui/map";
 import { Accessibility } from "lucide-react";
+import type { Vehicle, VehicleStr } from "@/lib/types";
 
 // NEW: Standalone card component
-export function VehicleCard({ vehicleData }: { vehicleData: Vehicle }) {
-    if (!vehicleData || !vehicleData.vehicle) return null;
+export function VehicleCard({ vehicleDataStr, vehicleData }: { vehicleDataStr: VehicleStr, vehicleData: Vehicle }) {
+    if (!vehicleData?.vehicle && !vehicleDataStr?.vehicle) return null;
 
     const vehicle = useMemo(() => {
-        return {
-            headsign: vehicleData.headsign,
-            route: JSON.parse(vehicleData.route),
-            trip: JSON.parse(vehicleData.trip),
-            vehicle: JSON.parse(vehicleData.vehicle),
+
+        if (vehicleDataStr) {
+            return {
+                headsign: vehicleDataStr.headsign,
+                route: JSON.parse(vehicleDataStr.route),
+                trip: JSON.parse(vehicleDataStr.trip),
+                vehicle: JSON.parse(vehicleDataStr.vehicle),
+            }
         }
+
+return {
+            headsign: vehicleData.headsign,
+            route: vehicleData.route,
+            trip: vehicleData.trip,
+            vehicle: vehicleData.vehicle,
+        }
+
+
     }, [vehicleData])
 
     return (
