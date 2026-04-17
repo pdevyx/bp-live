@@ -4,8 +4,8 @@ import RouteIcon from "../routes/route-icon"
 import { cn } from "@/lib/utils"
 
 export type VehicleSummaryProps = {
-    route: components["schemas"]["TransitRoute"],
-    headsign: string,
+    route: components["schemas"]["TransitRoute"]
+    headsign: string
     size?: "default" | "sm" | "xs"
 }
 
@@ -17,21 +17,27 @@ export default function VehicleSummary({
     ...props
 }: React.ComponentProps<"div"> & VehicleSummaryProps) {
     return (
-        <div className={cn("flex items-center gap-1.5 justify-start font-noto", className)} {...props}>
-            <RouteIcon route={route} size={size}/>
+        <div
+            className={cn(
+                "flex items-center justify-start gap-1.5 font-noto",
+                className
+            )}
+            {...props}
+        >
+            <RouteIcon route={route} size={size} />
 
             <RouteLabel
                 text={route?.shortName ?? "?"}
                 color={{
-                    "backgroundColor": `#${route.style?.vehicleIcon.color ?? route.style?.color}`,
-                    "color": `#${route?.style?.icon.textColor}`
+                    backgroundColor: `#${route.style?.vehicleIcon.color ?? route.style?.color}`,
+                    color: `#${route?.style?.icon.textColor}`,
                 }}
                 type={route?.style.icon.type ?? "BOX"}
                 size={size}
             />
-            <span className="text-lg font-mono">▶</span>
+            <span className="font-mono text-lg">▶</span>
 
-            <span className="font-bold text-sm">{headsign}</span>
+            <span className="text-sm font-bold">{headsign}</span>
         </div>
     )
 }

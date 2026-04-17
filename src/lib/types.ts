@@ -2,37 +2,37 @@ import type { components } from "./api/v1"
 
 export type VehicleStyle = {
     icon: {
-        color: string,
-        secondaryColor: string,
-        name: string,
-    },
-    color: string,
+        color: string
+        secondaryColor: string
+        name: string
+    }
+    color: string
     textColor: string
 }
 
 export type VehicleStr = {
-    headsign: string | undefined,
-    tripId: string | undefined,
-    routeId: string | undefined,
+    headsign: string | undefined
+    tripId: string | undefined
+    routeId: string | undefined
     // style: VehicleStyle,
-    vehicle: string,
-    route: string,
-    trip: string,
+    vehicle: string
+    route: string
+    trip: string
 }
 
 export type Vehicle = {
-    headsign: string | undefined,
-    tripId: string | undefined,
-    routeId: string | undefined,
+    headsign: string | undefined
+    tripId: string | undefined
+    routeId: string | undefined
     // style: VehicleStyle,
-    vehicle: components["schemas"]["TransitVehicle"],
-    route: components["schemas"]["TransitRoute"] | undefined,
-    trip: components["schemas"]["TransitTrip"] | undefined | null,
+    vehicle: components["schemas"]["TransitVehicle"]
+    route: components["schemas"]["TransitRoute"] | undefined
+    trip: components["schemas"]["TransitTrip"] | undefined | null
 }
 
 export type BoundingBox = {
-    lat: number,
-    lon: number,
-    latSpan: number,
+    lat: number
+    lon: number
+    latSpan: number
     lonSpan: number
 }

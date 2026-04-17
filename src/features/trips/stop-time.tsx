@@ -1,20 +1,23 @@
-import { cn } from "@/lib/utils";
-
+import { cn } from "@/lib/utils"
 
 export type StopTimeProps = {
-    value: string,
-    predicted: boolean,
+    value: string
+    predicted: boolean
     isPrevious: boolean
 }
 
 export default function StopTime({
     value,
     predicted,
-    isPrevious
+    isPrevious,
 }: StopTimeProps) {
-
     return (
-        <span className={cn("font-bold", isPrevious ? "text-ring" : (predicted && "text-success"))}>
+        <span
+            className={cn(
+                "font-bold",
+                isPrevious ? "text-ring" : predicted && "text-success"
+            )}
+        >
             {value}
         </span>
     )

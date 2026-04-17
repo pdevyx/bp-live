@@ -1,16 +1,16 @@
-import type { components } from "@/lib/api/v1";
-import { FUTAR_API_VERSION } from "@/lib/constants";
-import { $api } from "@/routes/__root";
-import { useMapStore } from "@/store/map.store";
-import { keepPreviousData } from "@tanstack/react-query";
-import { useMemo } from "react";
+import type { components } from "@/lib/api/v1"
+import { FUTAR_API_VERSION } from "@/lib/constants"
+import { $api } from "@/routes/__root"
+import { useMapStore } from "@/store/map.store"
+import { keepPreviousData } from "@tanstack/react-query"
+import { useMemo } from "react"
 
 export type MappedStop = {
     routes: components["schemas"]["TransitRoute"][]
 } & components["schemas"]["TransitStop"]
 
 export function useStops() {
-    const bounds = useMapStore((state) => state.bounds);
+    const bounds = useMapStore((state) => state.bounds)
 
     const query = $api.useQuery(
         "get",
@@ -29,36 +29,38 @@ export function useStops() {
         {
             enabled: !!bounds,
             refetchInterval: 5000,
-            placeholderData: keepPreviousData
+            placeholderData: keepPreviousData,
         }
-    );
+    )
 
     const stops = useMemo(() => {
-        const references = query.data?.data.references as components["schemas"]["OTPTransitReferences"] | undefined
+        const references = query.data?.data.references as
+            | components["schemas"]["OTPTransitReferences"]
+            | undefined
         const routeDict = references?.routes ?? {}
 
-        const stops = query.data?.data.list.map((s) => {
-            return {
-                ...s,
-                routes: s.routeIds.map((routeId) => routeDict[routeId])
-            }
-        }) ?? [] satisfies MappedStop[]
+        const stops =
+            query.data?.data.list.map((s) => {
+                return {
+                    ...s,
+                    routes: s.routeIds.map((routeId) => routeDict[routeId]),
+                }
+            }) ?? ([] satisfies MappedStop[])
 
         return stops
     }, [query.data])
 
-
     const stopsMap = useMemo(() => {
-        const map = new Map<string, MappedStop>();
-        stops.forEach(s => {
-            if (s.id) map.set(s.id, s);
-        });
-        return map;
-    }, [stops]);
-
+        const map = new Map<string, MappedStop>()
+        stops.forEach((s) => {
+            if (s.id) map.set(s.id, s)
+        })
+        return map
+    }, [stops])
 
     return {
         ...query,
-        stops, stopsMap
-    };
+        stops,
+        stopsMap,
+    }
 }

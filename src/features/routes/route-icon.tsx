@@ -6,89 +6,80 @@ import RailroadFull from "@/assets/icons/railroad_full.svg?react"
 import SuburbanRailwayFull from "@/assets/icons/hev.svg?react"
 import Metro from "@/assets/icons/metro.svg?react"
 
-import type { components } from "@/lib/api/v1";
-import type { FunctionComponent, SVGProps } from "react";
-import { cva, type VariantProps } from "class-variance-authority";
-import { cn } from "@/lib/utils";
-
+import type { components } from "@/lib/api/v1"
+import type { FunctionComponent, SVGProps } from "react"
+import { cva, type VariantProps } from "class-variance-authority"
+import { cn } from "@/lib/utils"
 
 export type RouteIcon = {
-    icon: FunctionComponent<SVGProps<SVGSVGElement>>,
-    primaryColor?: string,
+    icon: FunctionComponent<SVGProps<SVGSVGElement>>
+    primaryColor?: string
     secondaryColor?: string
 }
 
 export type IconMap = Partial<{
     [key in components["schemas"]["TraverseMode"]]: RouteIcon
-}>;
+}>
 
 export const routeIcons: IconMap = {
-    "BUS": {
-        icon: BusFull
+    BUS: {
+        icon: BusFull,
     },
-    "TROLLEYBUS": {
-        icon: TrolleyFull
+    TROLLEYBUS: {
+        icon: TrolleyFull,
     },
-    "TRAM": {
-        icon: TramFull
+    TRAM: {
+        icon: TramFull,
     },
-    "COACH": {
-        icon: SuburbanBus
+    COACH: {
+        icon: SuburbanBus,
     },
-    "RAIL": {
+    RAIL: {
         icon: RailroadFull,
-        primaryColor: "023E84"
+        primaryColor: "023E84",
     },
-    "SUBURBAN_RAILWAY": {
-        icon: SuburbanRailwayFull
+    SUBURBAN_RAILWAY: {
+        icon: SuburbanRailwayFull,
     },
-    "SUBWAY": {
-        icon: Metro
+    SUBWAY: {
+        icon: Metro,
     },
 }
 
 export const vehicleIcons: IconMap = {
     ...routeIcons,
 
-    "SUBURBAN_RAILWAY": {
+    SUBURBAN_RAILWAY: {
         icon: RailroadFull,
-        primaryColor: "037831"
+        primaryColor: "037831",
     },
-
 }
 
-
-const iconVariants = cva(
-    "relative z-10",
-    {
-        variants: {
-            size: {
-                default: "h-7 w-7",
-                sm: "h-6 w-6",
-                xs: "h-5 w-5"
-            }
+const iconVariants = cva("relative z-10", {
+    variants: {
+        size: {
+            default: "h-7 w-7",
+            sm: "h-6 w-6",
+            xs: "h-5 w-5",
         },
-        defaultVariants: {
-            size: "default"
-        }
-    }
-)
+    },
+    defaultVariants: {
+        size: "default",
+    },
+})
 
-const backgroundVariants = cva(
-    "rounded-full absolute",
-    {
-        variants: {
-            size: {
-                default: "h-5 w-5",
-                sm: "h-4 w-4",
-                xs: "h-4 w-4"
-            }
+const backgroundVariants = cva("absolute rounded-full", {
+    variants: {
+        size: {
+            default: "h-5 w-5",
+            sm: "h-4 w-4",
+            xs: "h-4 w-4",
         },
-        defaultVariants: {
-            size: "default"
-        }
-    }
-)
+    },
+    defaultVariants: {
+        size: "default",
+    },
+})
 
 export default function RouteIcon({
     route,
@@ -97,19 +88,31 @@ export default function RouteIcon({
     ...props
 }: React.ComponentProps<"div"> &
     VariantProps<typeof iconVariants> & {
-        route: components["schemas"]["TransitRoute"],
+        route: components["schemas"]["TransitRoute"]
     }) {
-    const icon = (route.type ? routeIcons[route.type as keyof typeof routeIcons] : undefined) ?? routeIcons["BUS"] as RouteIcon
+    const icon =
+        (route.type
+            ? routeIcons[route.type as keyof typeof routeIcons]
+            : undefined) ?? (routeIcons["BUS"] as RouteIcon)
 
     return (
-        <div className={cn("relative flex items-center justify-center", className)} {...props}>
+        <div
+            className={cn(
+                "relative flex items-center justify-center",
+                className
+            )}
+            {...props}
+        >
             <div
                 className={backgroundVariants({ size })}
                 style={{
-                    "backgroundColor": `#${icon.secondaryColor ?? route.style?.vehicleIcon.secondaryColor ?? "ffffff"}`
+                    backgroundColor: `#${icon.secondaryColor ?? route.style?.vehicleIcon.secondaryColor ?? "ffffff"}`,
                 }}
             />
-            <icon.icon className={iconVariants({ size })} fill={`#${icon.primaryColor ?? route.style?.vehicleIcon.color}`} />
+            <icon.icon
+                className={iconVariants({ size })}
+                fill={`#${icon.primaryColor ?? route.style?.vehicleIcon.color}`}
+            />
         </div>
     )
 }

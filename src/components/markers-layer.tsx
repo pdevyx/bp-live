@@ -1,91 +1,111 @@
-import { useEffect, useEffectEvent, useId, useState } from "react";
-import { MapPopup, useMap } from "./ui/map";
-import type { AddLayerObject, FilterSpecification, GeoJSONSource, LayerSpecification, MapGeoJSONFeature, MapMouseEvent } from "maplibre-gl";
-import { loadSprites } from "@/lib/utils";
+import { useEffect, useEffectEvent, useId, useState } from "react"
+import { MapPopup, useMap } from "./ui/map"
+import type {
+    AddLayerObject,
+    FilterSpecification,
+    GeoJSONSource,
+    LayerSpecification,
+    MapGeoJSONFeature,
+    MapMouseEvent,
+} from "maplibre-gl"
+import { loadSprites } from "@/lib/utils"
 
 type FeatureState<T> = {
-    properties: T;
-    coordinates: [number, number];
-} | null;
+    properties: T
+    coordinates: [number, number]
+} | null
 
 interface MarkersLayerProps<T> {
-    data: GeoJSON.FeatureCollection | string;
-    onClick?: (properties: FeatureState<T>) => void;
-    renderTooltip?: (properties: T) => React.ReactNode;
-    renderPopup?: (properties: T) => React.ReactNode;
-    layerProps?: AddLayerObject;
-    filter?: FilterSpecification;
+    data: GeoJSON.FeatureCollection | string
+    onClick?: (properties: FeatureState<T>) => void
+    renderTooltip?: (properties: T) => React.ReactNode
+    renderPopup?: (properties: T) => React.ReactNode
+    layerProps?: AddLayerObject
+    filter?: FilterSpecification
 }
 
-export function MarkersLayer<T = any>({ data, onClick, renderTooltip, renderPopup, layerProps, filter }: MarkersLayerProps<T>) {
-    const { map, isLoaded } = useMap();
-    const id = useId();
-    const sourceId = `markers-source-${id}`;
-    const layerId = `markers-layer-${id}`;
+export function MarkersLayer<T = GeoJSON.GeoJsonProperties>({
+    data,
+    onClick,
+    renderTooltip,
+    renderPopup,
+    layerProps,
+    filter,
+}: MarkersLayerProps<T>) {
+    const { map, isLoaded } = useMap()
+    const id = useId()
+    const sourceId = `markers-source-${id}`
+    const layerId = `markers-layer-${id}`
 
-    const [selectedFeature, setSelectedFeature] = useState<FeatureState<T>>(null);
-    const [hoveredFeature, setHoveredFeature] = useState<FeatureState<T>>(null);
+    const [selectedFeature, setSelectedFeature] =
+        useState<FeatureState<T>>(null)
+    const [hoveredFeature, setHoveredFeature] = useState<FeatureState<T>>(null)
 
     useEffect(() => {
-        const src = map?.getSource(sourceId) as GeoJSONSource | undefined;
+        const src = map?.getSource(sourceId) as GeoJSONSource | undefined
         if (src) {
             console.log("updateData")
-            src.setData(data);
+            src.setData(data)
         }
-    }, [data, map, sourceId]);
+    }, [data, map, sourceId])
 
-    const handleFeatureEvent = useEffectEvent((
-        e: MapMouseEvent & { features?: MapGeoJSONFeature[] },
-        setter: React.Dispatch<React.SetStateAction<FeatureState<T>>>
-    ) => {
-        if (!e.features?.length) return;
+    const handleFeatureEvent = useEffectEvent(
+        (
+            e: MapMouseEvent & { features?: MapGeoJSONFeature[] },
+            setter: React.Dispatch<React.SetStateAction<FeatureState<T>>>
+        ) => {
+            if (!e.features?.length) return
 
-        const feature = e.features[0];
-        const coordinates = (feature.geometry as GeoJSON.Point).coordinates as [number, number];
+            const feature = e.features[0]
+            const coordinates = (feature.geometry as GeoJSON.Point)
+                .coordinates as [number, number]
 
-        setter({
-            properties: feature.properties as T,
-            coordinates,
-        });
-    });
-
-    const handleClick = useEffectEvent((e: MapMouseEvent & { features?: MapGeoJSONFeature[] }) => {
-        if (onClick && e.features?.length) {
-            onClick(e.features[0].properties as T)
+            setter({
+                properties: feature.properties as T,
+                coordinates,
+            })
         }
-        
-        if (renderPopup) {
-            handleFeatureEvent(e, setSelectedFeature);
-        }
+    )
 
-        
-    });
+    const handleClick = useEffectEvent(
+        (e: MapMouseEvent & { features?: MapGeoJSONFeature[] }) => {
+            if (onClick && e.features?.length) {
+                onClick(e.features[0].properties as T)
+            }
 
-    const handleMouseEnter = useEffectEvent((e: MapMouseEvent & { features?: MapGeoJSONFeature[] }) => {
-        if (!map) return
-        map.getCanvas().style.cursor = "pointer";
-        if (renderTooltip) {
-            handleFeatureEvent(e, setHoveredFeature);
+            if (renderPopup) {
+                handleFeatureEvent(e, setSelectedFeature)
+            }
         }
-    });
+    )
+
+    const handleMouseEnter = useEffectEvent(
+        (e: MapMouseEvent & { features?: MapGeoJSONFeature[] }) => {
+            if (!map) return
+            map.getCanvas().style.cursor = "pointer"
+            if (renderTooltip) {
+                handleFeatureEvent(e, setHoveredFeature)
+            }
+        }
+    )
 
     const handleMouseLeave = useEffectEvent(() => {
         if (!map) return
-        map.getCanvas().style.cursor = "";
+        map.getCanvas().style.cursor = ""
         if (renderTooltip) {
-            setHoveredFeature(null);
+            setHoveredFeature(null)
         }
-    });
+    })
 
     useEffect(() => {
-        if (!map || !isLoaded) return;
+        if (!map || !isLoaded) return
 
         if (!map.getSource(sourceId)) {
             console.log("addSource")
             map.addSource(sourceId, {
                 type: "geojson",
                 data: data,
-            });
+            })
         }
 
         if (!map.getLayer(layerId)) {
@@ -100,34 +120,32 @@ export function MarkersLayer<T = any>({ data, onClick, renderTooltip, renderPopu
                 },
 
                 ...layerProps,
-
-            });
+            })
 
             if (filter) {
                 map.setFilter(layerId, filter)
             }
 
-            loadSprites(map);
+            loadSprites(map)
         }
 
-        map.on("click", layerId, handleClick);
-        map.on("mouseenter", layerId, handleMouseEnter);
-        map.on("mouseleave", layerId, handleMouseLeave);
-
+        map.on("click", layerId, handleClick)
+        map.on("mouseenter", layerId, handleMouseEnter)
+        map.on("mouseleave", layerId, handleMouseLeave)
 
         return () => {
-            map.off("click", layerId, handleClick);
-            map.off("mouseenter", layerId, handleMouseEnter);
-            map.off("mouseleave", layerId, handleMouseLeave);
+            map.off("click", layerId, handleClick)
+            map.off("mouseenter", layerId, handleMouseEnter)
+            map.off("mouseleave", layerId, handleMouseLeave)
 
-             try {
-                if (map.getLayer(layerId)) map.removeLayer(layerId);
-                if (map.getSource(sourceId)) map.removeSource(sourceId);
+            try {
+                if (map.getLayer(layerId)) map.removeLayer(layerId)
+                if (map.getSource(sourceId)) map.removeSource(sourceId)
             } catch {
                 // ignore cleanup errors
             }
-        };
-    }, [map, isLoaded, sourceId, layerId]);
+        }
+    }, [map, isLoaded, sourceId, layerId])
 
     useEffect(() => {
         if (map?.getLayer(layerId)) {
@@ -157,12 +175,12 @@ export function MarkersLayer<T = any>({ data, onClick, renderTooltip, renderPopu
                     latitude={hoveredFeature.coordinates[1]}
                     closeButton={false}
                     closeOnClick={false}
-                    className="p-0 bg-transparent shadow-none border-none pointer-events-none"
+                    className="pointer-events-none border-none bg-transparent p-0 shadow-none"
                     offset={15}
                 >
                     {renderTooltip(hoveredFeature.properties)}
                 </MapPopup>
             )}
         </>
-    );
+    )
 }

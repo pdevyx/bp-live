@@ -1,28 +1,28 @@
-import React from 'react'
-import ReactDOM from 'react-dom/client'
-import { RouterProvider, createRouter } from '@tanstack/react-router'
-import { routeTree } from './routeTree.gen'
-import './styles.css'
+import React from "react"
+import ReactDOM from "react-dom/client"
+import { RouterProvider, createRouter } from "@tanstack/react-router"
+import { routeTree } from "./routeTree.gen"
+import "./styles.css"
 
 const router = createRouter({
-  routeTree,
-  defaultPreload: 'intent',
-  defaultPreloadStaleTime: 0,
-  basepath: "/bp-live/"
+    routeTree,
+    defaultPreload: "intent",
+    defaultPreloadStaleTime: 0,
+    basepath: "/bp-live/",
 })
 
-declare module '@tanstack/react-router' {
-  interface Register {
-    router: typeof router
-  }
+declare module "@tanstack/react-router" {
+    interface Register {
+        router: typeof router
+    }
 }
 
-const rootElement = document.getElementById('root')!
+const rootElement = document.getElementById("root")!
 if (!rootElement.innerHTML) {
-  const root = ReactDOM.createRoot(rootElement)
-  root.render(
-    <React.StrictMode>
-      <RouterProvider router={router} />
-    </React.StrictMode>,
-  )
+    const root = ReactDOM.createRoot(rootElement)
+    root.render(
+        <React.StrictMode>
+            <RouterProvider router={router} />
+        </React.StrictMode>
+    )
 }
