@@ -132,6 +132,7 @@ export default function VehiclesLayer({
                         "icon-ignore-placement": true,
                         "icon-rotate": ["get", "rotate"],
                         "icon-size": 0.7,
+                        "symbol-z-order": "viewport-y",
                     },
                 }}
             />
