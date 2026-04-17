@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router"
 import { $api } from "../__root"
 import { FUTAR_API_VERSION } from "@/lib/constants"
-import { useEffect, useMemo } from "react"
+import { useEffect, useLayoutEffect, useMemo, useRef } from "react"
 import { decode, encode } from "@googlemaps/polyline-codec"
 import { MapRoute, useMap } from "@/components/ui/map"
 import VehiclesLayer from "@/features/vehicles/vehicles"
@@ -17,6 +17,8 @@ function RouteComponent() {
     const { id } = Route.useParams()
 
     const { map } = useMap()
+
+    const animated = useRef(false)
 
     const { data } = $api.useQuery(
         "get",
@@ -35,7 +37,7 @@ function RouteComponent() {
             },
         },
         {
-            refetchInterval: 10000,
+            refetchInterval: 5000,
             placeholderData: (prev) => prev,
         }
     )
@@ -54,22 +56,26 @@ function RouteComponent() {
         return decoded
     }, [data])
 
-    useEffect(() => {
-        if (!map || !path.length > 0) return
+    useLayoutEffect(() => {
+        if (!map || !path.length > 0 || animated.current) return
 
-        const bounds = path.reduce((bounds, coord) => {
-            return bounds.extend(coord)
-        }, new LngLatBounds(path[0], path[0]));
+        const bounds = path.reduce(
+            (bounds, coord) => {
+                return bounds.extend(coord)
+            },
+            new LngLatBounds(path[0], path[0])
+        )
 
         map.fitBounds(bounds, {
-             padding: {
+            padding: {
                 top: 100,
                 bottom: 100,
                 left: 300,
-                right: 50
-             }
+                right: 50,
+            },
         })
-        
+
+        animated.current = true
     }, [map, path])
 
     return (
@@ -86,4 +92,3 @@ function RouteComponent() {
         </>
     )
 }
-
