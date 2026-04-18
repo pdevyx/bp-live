@@ -1,6 +1,6 @@
 import type { components } from "@/lib/api/v1"
+import { $api } from "@/lib/client"
 import { FUTAR_API_VERSION } from "@/lib/constants"
-import { $api } from "@/routes/__root"
 import { useMapStore } from "@/store/map.store"
 import { keepPreviousData } from "@tanstack/react-query"
 import { useMemo } from "react"
@@ -28,7 +28,6 @@ export function useStops() {
         },
         {
             enabled: !!bounds,
-            refetchInterval: 5000,
             placeholderData: keepPreviousData,
         },
         

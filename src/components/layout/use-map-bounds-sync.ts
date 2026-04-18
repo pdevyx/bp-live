@@ -1,7 +1,7 @@
-import { useEffect } from "react"
-import { useMapStore } from "@/store/map.store"
 import { useMap } from "@/components/ui/map"
 import type { BoundingBox } from "@/lib/types"
+import { useMapStore } from "@/store/map.store"
+import { useEffect } from "react"
 
 export function useMapBoundsSync() {
     const { map } = useMap()

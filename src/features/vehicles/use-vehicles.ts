@@ -1,9 +1,9 @@
 import { useMemo } from "react"
-import { $api } from "@/routes/__root"
 import { useMapStore } from "@/store/map.store"
 import { FUTAR_API_VERSION } from "@/lib/constants"
 import type { Vehicle } from "@/lib/types"
 import { keepPreviousData } from "@tanstack/react-query"
+import { $api } from "@/lib/client"
 
 export function useVehicles({ tripIds }: { tripIds?: string[] } = {}) {
     const bounds = useMapStore((state) => state.bounds)

@@ -1,11 +1,11 @@
-import { renderToStaticMarkup } from "react-dom/server"
-import { createElement } from "react"
 import {
     routeIcons,
     vehicleIcons,
     type RouteIcon,
 } from "@/features/routes/route-icon"
 import { Accessibility } from "lucide-react"
+import { createElement } from "react"
+import { renderToStaticMarkup } from "react-dom/server"
 
 export function drawBearing(color: string) {
     const size = 64 // Resolution of the icon
@@ -28,7 +28,7 @@ export function drawBearing(color: string) {
     return ctx.getImageData(0, 0, size, size)
 }
 
-export function createMultiColorRing(colors: string[]) {
+export function createMultiColorRing(colors: Array<string>) {
     const size = 64 // Resolution of the icon
     const canvas = document.createElement("canvas")
     canvas.width = size

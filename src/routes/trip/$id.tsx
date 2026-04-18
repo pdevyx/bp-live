@@ -1,12 +1,12 @@
-import { createFileRoute } from "@tanstack/react-router"
-import { $api } from "../__root"
-import { FUTAR_API_VERSION } from "@/lib/constants"
-import { useLayoutEffect, useMemo, useRef } from "react"
 import { decode } from "@googlemaps/polyline-codec"
-import { MapRoute, useMap } from "@/components/ui/map"
-import VehiclesLayer from "@/features/vehicles/vehicles"
-import TripDetails from "@/features/trips/trip-details"
+import { createFileRoute } from "@tanstack/react-router"
 import { LngLatBounds } from "maplibre-gl"
+import { useLayoutEffect, useMemo, useRef } from "react"
+import { MapRoute, useMap } from "@/components/ui/map"
+import TripDetails from "@/features/trips/trip-details"
+import VehiclesLayer from "@/features/vehicles/vehicles"
+import { $api } from "@/lib/client"
+import { FUTAR_API_VERSION } from "@/lib/constants"
 
 export const Route = createFileRoute("/trip/$id")({
     component: RouteComponent,
@@ -41,7 +41,7 @@ function RouteComponent() {
         }
     )
 
-    const path: [number, number][] = useMemo(() => {
+    const path: Array<[number, number]> = useMemo(() => {
         const points = data?.data.entry.polyline?.points
 
         console.log(data)
@@ -59,8 +59,8 @@ function RouteComponent() {
         if (!map || path.length === 0 || animated.current) return
 
         const bounds = path.reduce(
-            (bounds, coord) => {
-                return bounds.extend(coord)
+            (bnds, coord) => {
+                return bnds.extend(coord)
             },
             new LngLatBounds(path[0], path[0])
         )
@@ -86,7 +86,7 @@ function RouteComponent() {
                 opacity={0.8}
             />
             <VehiclesLayer tripIds={[id]} filter={["==", ["get", "tripId"], id]} />
-            {data && <TripDetails data={data?.data} />}
+            {data && <TripDetails data={data.data} />}
         </>
     )
 }

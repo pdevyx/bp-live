@@ -1,8 +1,8 @@
 import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
+import { fromUnixTime, format } from "date-fns"
 import type { components } from "./api/v1"
 import type { Vehicle } from "./types"
-import { fromUnixTime, format } from "date-fns"
 
 
 export function cn(...inputs: ClassValue[]) {
@@ -21,13 +21,13 @@ export function vehicleFromTripResponse(
     const headsign = vehicle?.label
 
     const trip: components["schemas"]["TransitTrip"] =
-        resp.references?.trips?.[resp.entry.tripId ?? ""]
+        resp.references?.trips?.[resp.entry.tripId]
 
     const route: components["schemas"]["TransitRoute"] =
-        resp.references?.routes?.[trip.routeId ?? ""]
+        resp.references?.routes?.[trip.routeId]
 
-    const tripId = trip?.id
-    const routeId = route?.id
+    const tripId = trip.id
+    const routeId = route.id
 
     return {
         headsign,

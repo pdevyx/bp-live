@@ -1,20 +1,10 @@
 import { Link, Outlet, createRootRoute } from "@tanstack/react-router"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { ThemeProvider } from "@/providers/theme-provider"
-import createFetchClient from "openapi-fetch"
-import createClient from "openapi-react-query"
-import type { paths } from "@/lib/api/v1"
 import { Map, MapControls } from "@/components/ui/map"
 import { ModeToggle } from "@/components/layout/mode-toggle"
 import { useMapBoundsSync } from "@/components/layout/use-map-bounds-sync"
-
-export const queryClient = new QueryClient()
-
-export const fetchClient = createFetchClient<paths>({
-    baseUrl: "https://futar.bkk.hu/api/query/v1/ws",
-})
-
-export const $api = createClient(fetchClient)
+import { queryClient } from "@/lib/client"
 
 export const Route = createRootRoute({
     component: RootComponent,
