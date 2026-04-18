@@ -30,7 +30,8 @@ export function useStops() {
             enabled: !!bounds,
             refetchInterval: 5000,
             placeholderData: keepPreviousData,
-        }
+        },
+        
     )
 
     const stops = useMemo(() => {

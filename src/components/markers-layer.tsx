@@ -8,7 +8,7 @@ import type {
     MapGeoJSONFeature,
     MapMouseEvent,
 } from "maplibre-gl"
-import { loadSprites } from "@/lib/utils"
+import { loadSprites } from "@/lib/map/futar-icons"
 
 type FeatureState<T> = {
     properties: T
@@ -17,10 +17,10 @@ type FeatureState<T> = {
 
 interface MarkersLayerProps<T> {
     data: GeoJSON.FeatureCollection | string
-    onClick?: (properties: FeatureState<T>) => void
+    onClick?: (properties: T) => void
     renderTooltip?: (properties: T) => React.ReactNode
     renderPopup?: (properties: T) => React.ReactNode
-    layerProps?: AddLayerObject
+    layerProps?: Omit<FilterSpecification, "id" | "source" | "type">
     filter?: FilterSpecification
 }
 

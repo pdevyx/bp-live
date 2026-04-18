@@ -1,5 +1,5 @@
 import { useMap } from "@/components/ui/map"
-import { drawBearing, generateVehicleIcon } from "@/lib/utils"
+import { drawBearing, generateVehicleIcon } from "@/lib/map/icon-renderer"
 import { Link, useNavigate } from "@tanstack/react-router"
 import type { FilterSpecification } from "maplibre-gl"
 import { useEffect, useMemo } from "react"
@@ -14,10 +14,12 @@ function vehicleIconKey(v: Vehicle) {
 
 export default function VehiclesLayer({
     filter,
+    tripIds,
 }: {
-    filter?: FilterSpecification
+    filter?: FilterSpecification,
+    tripIds?: string[]
 }) {
-    const { vehicles, vehiclesMap } = useVehicles()
+    const { vehicles, vehiclesMap } = useVehicles({ tripIds })
     const { map } = useMap()
 
     const vehicleFeatures = useMemo(
@@ -125,7 +127,7 @@ export default function VehiclesLayer({
                 filter={filter}
                 layerProps={{
                     type: "symbol",
-                    minzoom: 14,
+                    minzoom: !!tripIds && tripIds.length > 0 ? undefined : 14,
                     layout: {
                         "icon-image": ["get", "icon-image"],
                         "icon-allow-overlap": true,
@@ -148,10 +150,10 @@ export default function VehiclesLayer({
                     const vehicle = vehiclesMap.get(properties.id)
                     if (!vehicle) return
                     console.log(vehicle)
-                    navigate({ to: `./trip/${vehicle.tripId}` })
+                    navigate({ to: `/trip/${vehicle.tripId}`, from: "/" })
                 }}
                 layerProps={{
-                    minzoom: 14,
+                    minzoom: !!tripIds && tripIds.length > 0 ? undefined : 14,
                 }}
             />
         </>

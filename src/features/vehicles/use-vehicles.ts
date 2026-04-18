@@ -5,10 +5,10 @@ import { FUTAR_API_VERSION } from "@/lib/constants"
 import type { Vehicle } from "@/lib/types"
 import { keepPreviousData } from "@tanstack/react-query"
 
-export function useVehicles() {
+export function useVehicles({ tripIds }: { tripIds?: string[] } = {}) {
     const bounds = useMapStore((state) => state.bounds)
 
-    const query = $api.useQuery(
+    const vehiclesForLocation = $api.useQuery(
         "get",
         "/{dialect}/api/where/vehicles-for-location",
         {
@@ -29,10 +29,38 @@ export function useVehicles() {
         }
     )
 
-    const vehicles = useMemo(() => {
-        if (!query.data?.data) return []
+    const vehicleForTrip = $api.useQuery(
+        "get",
+        "/{dialect}/api/where/vehicle-for-trip",
+        {
+            params: {
+                path: { dialect: "otp" },
+                query: {
+                    appVersion: import.meta.env.VITE_APP_VERSION ?? "1.0.0",
+                    version: FUTAR_API_VERSION,
+                    key: import.meta.env.VITE_FUTAR_API_KEY,
+                    tripId: tripIds ?? [],
+                    ...bounds!,
+                },
+            },
+        },
+        {
+            enabled: !!bounds && !!tripIds && tripIds.length > 0,
+            refetchInterval: 5000,
+            placeholderData: keepPreviousData,
+        }
+    )
 
-        const data = query.data.data
+    const vehicles = useMemo(() => {
+        let data = undefined
+        if (!!tripIds && tripIds.length > 0 && !!vehicleForTrip.data?.data) {
+            data = vehicleForTrip.data.data
+        } else if (vehiclesForLocation.data?.data) {
+            data = vehiclesForLocation.data.data
+        }
+
+        if (!data) return []
+
         const vehiclesList = data.list ?? []
         const references = data.references
         const routes = references?.routes ?? {}
@@ -50,7 +78,7 @@ export function useVehicles() {
                 } as Vehicle
             })
             .filter((v): v is Vehicle => !!(v.route && v.trip && v.vehicle))
-    }, [query.data]) // Memoizes caching based specifically off fetched data
+    }, [vehiclesForLocation.data]) // Memoizes caching based specifically off fetched data
 
     const vehiclesMap = useMemo(() => {
         const map = new Map<string, Vehicle>()
@@ -61,7 +89,7 @@ export function useVehicles() {
     }, [vehicles])
 
     return {
-        ...query,
+        ...vehiclesForLocation,
         vehicles,
         vehiclesMap,
     }

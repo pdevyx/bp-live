@@ -2,7 +2,7 @@ import { useStops } from "./use-stops"
 import { useEffect, useMemo } from "react"
 import { MarkersLayer } from "@/components/markers-layer"
 import { useMap } from "@/components/ui/map"
-import { createMultiColorRing, drawBearing } from "@/lib/utils"
+import { createMultiColorRing, drawBearing } from "@/lib/map/icon-renderer"
 import { Card, CardContent } from "@/components/ui/card"
 import RouteList from "../routes/route-list"
 
