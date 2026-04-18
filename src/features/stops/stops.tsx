@@ -1,12 +1,12 @@
 import { useStops } from "./use-stops"
 import { useEffect, useMemo } from "react"
-import { MarkersLayer } from "@/components/markers-layer"
+import { MarkersLayer, type MarkersLayerProps } from "@/components/markers-layer"
 import { useMap } from "@/components/ui/map"
 import { createMultiColorRing, drawBearing } from "@/lib/map/icon-renderer"
 import { Card, CardContent } from "@/components/ui/card"
 import RouteList from "../routes/route-list"
 
-export default function StopsLayer() {
+export default function StopsLayer({ filter }: Pick<MarkersLayerProps, "filter">) {
     const { stops, stopsMap, data } = useStops()
     const { map, isLoaded } = useMap()
 
@@ -22,6 +22,7 @@ export default function StopsLayer() {
                         ? s.style.image
                         : `ring-${s.style.colors.join("-")}`,
                     rotate: s.style.image ? 0 : parseInt(s.direction, 10) || 0,
+                    routeIds: s.routeIds
                 },
             })),
         } satisfies GeoJSON.FeatureCollection
@@ -40,6 +41,7 @@ export default function StopsLayer() {
                     properties: {
                         id: s.id,
                         rotate: parseInt(s.direction, 10) || 0,
+                        routeIds: s.routeIds
                     },
                 })),
         } satisfies GeoJSON.FeatureCollection
@@ -82,6 +84,7 @@ export default function StopsLayer() {
         <>
             <MarkersLayer
                 data={stopBearings}
+                filter={filter}
                 layerProps={{
                     type: "symbol",
                     minzoom: 12,
@@ -108,6 +111,7 @@ export default function StopsLayer() {
             />
             <MarkersLayer
                 data={stopFeatures}
+                filter={filter}
                 renderTooltip={(properties) => {
                     const stop = stopsMap.get(properties.id)
                     if (!stop) return null

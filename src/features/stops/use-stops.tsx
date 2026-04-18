@@ -29,6 +29,8 @@ export function useStops() {
         {
             enabled: !!bounds,
             placeholderData: keepPreviousData,
+            staleTime: Infinity,
+            gcTime: Infinity
         },
         
     )

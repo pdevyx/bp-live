@@ -1,26 +1,42 @@
 import { useMap } from "@/components/ui/map"
 import { drawBearing, generateVehicleIcon } from "@/lib/map/icon-renderer"
-import { Link, useNavigate } from "@tanstack/react-router"
-import type { FilterSpecification } from "maplibre-gl"
-import { useEffect, useMemo } from "react"
-import { MarkersLayer } from "../../components/markers-layer"
-import { VehicleCard } from "./vehicle-tooltip"
+import { useNavigate } from "@tanstack/react-router"
+import { useEffect, useMemo, useRef } from "react"
+
 import { useVehicles } from "./use-vehicles"
 import type { Vehicle } from "@/lib/types"
+import { VehicleCard } from "./vehicle-tooltip"
+import { MarkersLayer, type MarkersLayerProps } from "@/components/markers-layer"
 
-function vehicleIconKey(v: Vehicle) {
-    return `vehicle-${v.route?.type ?? "BUS"}-#${v.route?.style.vehicleIcon.color ?? "888888"}-${v.route?.style.vehicleIcon.secondaryColor ?? "ffffff"}-${v.vehicle.wheelchairAccessible ?? false}`
+function vehicleIconKey(vis: VehicleVisualization) {
+    return `vehicle-${vis.icon}-#${vis.primaryColor}-${vis.secondaryColor}-${vis.isAccessible}`
+}
+
+export type VehicleVisualization = {
+    icon: string,
+    primaryColor: string,
+    secondaryColor: string,
+    isAccessible: boolean
+}
+
+function vehicleVisualization(v: Vehicle): VehicleVisualization {
+    return {
+         icon: (v.vehicle.style?.icon?.name ?? v.route?.type ?? "BUS").replaceAll("-", "_"),
+         primaryColor: v.vehicle.style?.icon?.color ?? "888888",
+         secondaryColor: v.vehicle.style?.icon?.secondaryColor ?? "ffffff",
+         isAccessible: v.vehicle.wheelchairAccessible ?? false
+    }
 }
 
 export default function VehiclesLayer({
     filter,
     tripIds,
-}: {
-    filter?: FilterSpecification,
+}: Pick<MarkersLayerProps<{ id: string }>, "filter"> & {
     tripIds?: string[]
 }) {
     const { vehicles, vehiclesMap } = useVehicles({ tripIds })
     const { map } = useMap()
+    const generatingIcons = useRef(new Set<string>())
 
     const vehicleFeatures = useMemo(
         () => ({
@@ -37,7 +53,7 @@ export default function VehiclesLayer({
                 properties: {
                     id: v.vehicle.vehicleId,
                     tripId: v.tripId,
-                    "icon-image": vehicleIconKey(v),
+                    "icon-image": vehicleIconKey(vehicleVisualization(v)),
                     color: `#${v.route?.style.vehicleIcon.color ?? v.route?.style.color}`,
                 },
             })),
@@ -92,30 +108,37 @@ export default function VehiclesLayer({
             map.addImage("v-bearing-stopped", bearing)
         }
 
-        const loadVehicleIcons = async () => {
-            await Promise.all(
-                vehicles.map(async (v) => {
-                    const id = vehicleIconKey(v)
 
-                    const img = await generateVehicleIcon(
-                        v.route?.type ?? "BUS",
-                        v.route?.style.vehicleIcon.color ?? "888888",
-                        v.route?.style.vehicleIcon.secondaryColor ?? "ffffff",
-                        v.vehicle.wheelchairAccessible ?? false
-                    )
+        const uniqueVisualizations = new Map<string, VehicleVisualization>()
 
-                    if (!img) throw Error(`Failed to draw icon image for ${id}`)
+        vehicles.forEach((v) => {
+            const vis = vehicleVisualization(v)
+            const id = vehicleIconKey(vis)
 
-                    if (map.hasImage(id)) {
-                        map.updateImage(id, img)
-                    } else {
-                        map.addImage(id, img)
-                    }
-                })
-            )
-        }
+            if (!map.hasImage(id) && !generatingIcons.current.has(id)) {
+                uniqueVisualizations.set(id, vis)
+            }
+        })
 
-        void loadVehicleIcons()
+        uniqueVisualizations.forEach((vis, id) => {
+            generatingIcons.current.add(id)
+
+            generateVehicleIcon(
+                vis.icon,
+                vis.primaryColor,
+                vis.secondaryColor,
+                vis.isAccessible
+            ).then((img) => {
+                if (!img) throw Error(`Failed to draw icon image for ${id}`)
+                    
+                if (!map.hasImage(id)) {
+                    map.addImage(id, img)
+                }
+            }).finally(() => {
+                generatingIcons.current.delete(id)
+            })
+        })
+       
     }, [map, vehicles])
 
     const navigate = useNavigate()
@@ -134,7 +157,6 @@ export default function VehiclesLayer({
                         "icon-ignore-placement": true,
                         "icon-rotate": ["get", "rotate"],
                         "icon-size": 0.7,
-                        "symbol-z-order": "viewport-y",
                     },
                 }}
             />
@@ -149,7 +171,6 @@ export default function VehiclesLayer({
                 onClick={(properties) => {
                     const vehicle = vehiclesMap.get(properties.id)
                     if (!vehicle) return
-                    console.log(vehicle)
                     navigate({ to: `/trip/${vehicle.tripId}`, from: "/" })
                 }}
                 layerProps={{

@@ -7,6 +7,8 @@ import TripDetails from "@/features/trips/trip-details"
 import VehiclesLayer from "@/features/vehicles/vehicles"
 import { $api } from "@/lib/client"
 import { FUTAR_API_VERSION } from "@/lib/constants"
+import StopsLayer from "@/features/stops/stops"
+import { vehicleFromTripResponse } from "@/lib/utils"
 
 export const Route = createFileRoute("/trip/$id")({
     component: RouteComponent,
@@ -37,22 +39,30 @@ function RouteComponent() {
         },
         {
             refetchInterval: 5000,
-            placeholderData: (prev) => prev,
         }
     )
 
     const path: Array<[number, number]> = useMemo(() => {
         const points = data?.data.entry.polyline?.points
 
-        console.log(data)
-
         if (!points) {
             return []
         }
 
-        const decoded = decode(points).map((l) => l.reverse() as [number, number])
+        const decoded = decode(points).map(
+            (l) => l.reverse() as [number, number]
+        )
 
         return decoded
+    }, [data])
+
+    const vehicle = useMemo(
+        () => data && vehicleFromTripResponse(data.data),
+        [data]
+    )
+
+    const stopIds = useMemo(() => {
+        return data && data.data.entry.stopTimes.map((st) => st.stopId)
     }, [data])
 
     useLayoutEffect(() => {
@@ -79,14 +89,27 @@ function RouteComponent() {
 
     return (
         <>
-            <MapRoute
-                coordinates={path}
-                color={`#${data?.data.entry.vehicle?.style?.icon.color ?? "888"}`}
-                width={4}
-                opacity={0.8}
-            />
-            <VehiclesLayer tripIds={[id]} filter={["==", ["get", "tripId"], id]} />
-            {data && <TripDetails data={data.data} />}
+            {data && vehicle && (
+                    <>
+                        <MapRoute
+                            coordinates={path}
+                            color={`#${vehicle.route.style.color ?? "888"}`}
+                            width={4}
+                            opacity={0.8}
+                        />
+                        <StopsLayer
+                            filter={
+                                stopIds && [
+                                    "in",
+                                    ["get", "id"],
+                                    ["literal", stopIds],
+                                ]
+                            }
+                        />
+                        <VehiclesLayer tripIds={[id]} />
+                        <TripDetails data={data.data} vehicle={vehicle} />
+                    </>
+                )}
         </>
     )
 }

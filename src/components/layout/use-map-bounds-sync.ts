@@ -29,7 +29,7 @@ export function useMapBoundsSync() {
         }
 
         map.on("moveend", updateBounds)
-        updateBounds() // Initial set
+        updateBounds()
 
         return () => {
             map.off("moveend", updateBounds)

@@ -6,16 +6,18 @@ import { cn, vehicleFromTripResponse } from "@/lib/utils"
 import StopTimesEntry from "./stop-time-entry"
 import { useMemo } from "react"
 import VehicleSummary from "../vehicles/vehicle-summary"
+import type { Vehicle } from "@/lib/types"
 
 export default function TripDetails({
     data,
+    vehicle
 }: {
-    data: components["schemas"]["TransitEntryWithReferencesTransitTripDetailsOTP"]
+    data: components["schemas"]["TransitEntryWithReferencesTransitTripDetailsOTP"],
+    vehicle: Vehicle
 }) {
-    const vehicle = useMemo(() => vehicleFromTripResponse(data), [data])
 
     return (
-        <div className="pointer-events-none absolute top-0 bottom-0 left-2 z-10 my-2 flex items-center">
+        <div className="pointer-events-none absolute top-0 bottom-0 left-2 z-10 my-2 flex items-center max-h-screen">
             <div className="pointer-events-auto flex flex-col items-center gap-2 rounded-xl bg-background/90 py-4">
                 <div className="flex w-full items-center justify-between gap-2 px-4">
                     <h2 className="text-lg font-bold">Trip details</h2>

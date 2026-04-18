@@ -19,7 +19,9 @@ export type RouteIcon = {
 
 export type IconMap = Partial<{
     [key in components["schemas"]["TraverseMode"]]: RouteIcon
-}>
+}> | {
+    [key: string]: RouteIcon
+}
 
 export const routeIcons: IconMap = {
     BUS: {
@@ -50,6 +52,10 @@ export const vehicleIcons: IconMap = {
     ...routeIcons,
 
     SUBURBAN_RAILWAY: {
+        icon: RailroadFull,
+        primaryColor: "037831",
+    },
+    VEHICLE_SUBURBAN_RAILWAY: {
         icon: RailroadFull,
         primaryColor: "037831",
     },

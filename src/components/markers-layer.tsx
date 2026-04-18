@@ -15,7 +15,7 @@ type FeatureState<T> = {
     coordinates: [number, number]
 } | null
 
-interface MarkersLayerProps<T> {
+export type MarkersLayerProps<T> = {
     data: GeoJSON.FeatureCollection | string
     onClick?: (properties: T) => void
     renderTooltip?: (properties: T) => React.ReactNode
@@ -44,7 +44,6 @@ export function MarkersLayer<T = GeoJSON.GeoJsonProperties>({
     useEffect(() => {
         const src = map?.getSource(sourceId) as GeoJSONSource | undefined
         if (src) {
-            console.log("updateData")
             src.setData(data)
         }
     }, [data, map, sourceId])
@@ -101,7 +100,6 @@ export function MarkersLayer<T = GeoJSON.GeoJsonProperties>({
         if (!map || !isLoaded) return
 
         if (!map.getSource(sourceId)) {
-            console.log("addSource")
             map.addSource(sourceId, {
                 type: "geojson",
                 data: data,
@@ -148,8 +146,9 @@ export function MarkersLayer<T = GeoJSON.GeoJsonProperties>({
     }, [map, isLoaded, sourceId, layerId])
 
     useEffect(() => {
-        if (map?.getLayer(layerId)) {
-            console.log("setFilter")
+        if (!map) return
+
+        if (map.getLayer(layerId) !== undefined && map.getFilter(layerId) !== filter) {
             map.setFilter(layerId, filter)
         }
     }, [map, layerId, filter])

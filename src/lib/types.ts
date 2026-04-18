@@ -26,8 +26,8 @@ export type Vehicle = {
     routeId: string | undefined
     // style: VehicleStyle,
     vehicle: components["schemas"]["TransitVehicle"]
-    route: components["schemas"]["TransitRoute"] | undefined
-    trip: components["schemas"]["TransitTrip"] | undefined | null
+    route: components["schemas"]["TransitRoute"]
+    trip: components["schemas"]["TransitTrip"]
 }
 
 export type BoundingBox = {

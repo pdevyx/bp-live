@@ -102,14 +102,14 @@ async function loadReactAsImage(
 /**
  * Generates a vehicle icon as ImageData based on the route type, colors, and accessibility features.
  *
- * @param routeType eg. "BUS"
+ * @param type eg. "BUS"
  * @param colorHex eg. "009EE3" (without #)
  * @param backgroundColorHex eg. "FFFFFF" (without #)
  * @param isAccessible Whether to include the accessibility badge (wheelchair icon)
  * @returns
  */
 export async function generateVehicleIcon(
-    routeType: string,
+    type: string,
     colorHex: string,
     backgroundColorHex: string,
     isAccessible: boolean
@@ -124,12 +124,19 @@ export async function generateVehicleIcon(
     const ctx = canvas.getContext("2d")
     if (!ctx) return null
 
+    let vehicleIcon = vehicleIcons[type.toUpperCase() as keyof typeof vehicleIcons]
+
+    if (!vehicleIcon) {
+        console.warn(`No icon found for route type ${type}, using default.`)
+
+        vehicleIcon = vehicleIcons["BUS"] as RouteIcon
+    }
+
     const {
         icon: IconComponent,
         primaryColor,
         secondaryColor,
-    } = vehicleIcons[routeType as keyof typeof vehicleIcons] ??
-    (routeIcons["BUS"] as RouteIcon)
+    } = vehicleIcon
 
     const iconElement = createElement(IconComponent, {
         fill: `#${primaryColor ?? colorHex}`,
@@ -137,7 +144,7 @@ export async function generateVehicleIcon(
         height: iconSize,
     })
 
-    const cacheKey = `vehicle-${routeType}-${colorHex}-${backgroundColorHex}-${isAccessible}`
+    const cacheKey = `vehicle-${type}-${colorHex}-${backgroundColorHex}-${isAccessible}`
     const mainImg = await loadReactAsImage(iconElement, cacheKey)
 
     ctx.beginPath()

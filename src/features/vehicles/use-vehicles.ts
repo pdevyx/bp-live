@@ -48,6 +48,8 @@ export function useVehicles({ tripIds }: { tripIds?: string[] } = {}) {
             enabled: !!bounds && !!tripIds && tripIds.length > 0,
             refetchInterval: 5000,
             placeholderData: keepPreviousData,
+            staleTime: Infinity,
+            gcTime: Infinity
         }
     )
 
@@ -78,7 +80,7 @@ export function useVehicles({ tripIds }: { tripIds?: string[] } = {}) {
                 } as Vehicle
             })
             .filter((v): v is Vehicle => !!(v.route && v.trip && v.vehicle))
-    }, [vehiclesForLocation.data]) // Memoizes caching based specifically off fetched data
+    }, [vehiclesForLocation.data, tripIds])
 
     const vehiclesMap = useMemo(() => {
         const map = new Map<string, Vehicle>()

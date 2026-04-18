@@ -15,7 +15,7 @@ export function formatTime(time: number | undefined) {
 
 export function vehicleFromTripResponse(
     resp: components["schemas"]["TransitEntryWithReferencesTransitTripDetailsOTP"]
-) {
+): Vehicle {
     const vehicle = resp.entry.vehicle
 
     const headsign = vehicle?.label
@@ -36,5 +36,5 @@ export function vehicleFromTripResponse(
         vehicle,
         route,
         trip,
-    } satisfies Vehicle
+    }
 }
