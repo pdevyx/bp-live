@@ -1,12 +1,13 @@
 import { useStops } from "./use-stops"
 import { useEffect, useMemo } from "react"
-import { MarkersLayer, type MarkersLayerProps } from "@/components/markers-layer"
+import { MapLayer, type MapLayerProps } from "@/components/map-layer"
 import { useMap } from "@/components/ui/map"
 import { createMultiColorRing, drawBearing } from "@/lib/map/icon-renderer"
 import { Card, CardContent } from "@/components/ui/card"
 import RouteList from "../routes/route-list"
+import { MapSource } from "@/components/map-source"
 
-export default function StopsLayer({ filter }: Pick<MarkersLayerProps, "filter">) {
+export default function StopsLayer({ filter }: Pick<MapLayerProps, "filter">) {
     const { stops, stopsMap, data } = useStops()
     const { map, isLoaded } = useMap()
 
@@ -22,28 +23,10 @@ export default function StopsLayer({ filter }: Pick<MarkersLayerProps, "filter">
                         ? s.style.image
                         : `ring-${s.style.colors.join("-")}`,
                     rotate: s.style.image ? 0 : parseInt(s.direction, 10) || 0,
+                    "bearing-rotate": parseInt(s.direction, 10) || 0,
                     routeIds: s.routeIds
                 },
             })),
-        } satisfies GeoJSON.FeatureCollection
-
-        return collection
-    }, [stops])
-
-    const stopBearings = useMemo(() => {
-        const collection = {
-            type: "FeatureCollection",
-            features: stops
-                .filter((s) => s.direction.length > 0)
-                .map((s) => ({
-                    type: "Feature",
-                    geometry: { type: "Point", coordinates: [s.lon, s.lat] },
-                    properties: {
-                        id: s.id,
-                        rotate: parseInt(s.direction, 10) || 0,
-                        routeIds: s.routeIds
-                    },
-                })),
         } satisfies GeoJSON.FeatureCollection
 
         return collection
@@ -81,9 +64,8 @@ export default function StopsLayer({ filter }: Pick<MarkersLayerProps, "filter">
     }, [stops])
 
     return (
-        <>
-            <MarkersLayer
-                data={stopBearings}
+        <MapSource data={stopFeatures}>
+            <MapLayer
                 filter={filter}
                 layerProps={{
                     type: "symbol",
@@ -105,12 +87,13 @@ export default function StopsLayer({ filter }: Pick<MarkersLayerProps, "filter">
                             20,
                             0.5,
                         ],
-                        "icon-rotate": ["get", "rotate"],
+                        "icon-rotation-alignment": "map",
+                        "icon-pitch-alignment": "map",
+                        "icon-rotate": ["get", "bearing-rotate"],
                     },
                 }}
             />
-            <MarkersLayer
-                data={stopFeatures}
+            <MapLayer
                 filter={filter}
                 renderTooltip={(properties) => {
                     const stop = stopsMap.get(properties.id)
@@ -152,9 +135,10 @@ export default function StopsLayer({ filter }: Pick<MarkersLayerProps, "filter">
                             0.5,
                         ],
                         "icon-rotate": ["get", "rotate"],
+                        "icon-pitch-alignment": "map",
                     },
                 }}
             />
-        </>
+        </MapSource>
     )
 }

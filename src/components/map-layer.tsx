@@ -2,51 +2,40 @@ import { useEffect, useEffectEvent, useId, useState } from "react"
 import { MapPopup, useMap } from "./ui/map"
 import type {
     AddLayerObject,
-    FilterSpecification,
-    GeoJSONSource,
-    LayerSpecification,
-    MapGeoJSONFeature,
-    MapMouseEvent,
+    FilterSpecification, MapGeoJSONFeature,
+    MapMouseEvent
 } from "maplibre-gl"
-import { loadSprites } from "@/lib/map/futar-icons"
+import { useMapSource } from "./map-source"
 
 type FeatureState<T> = {
     properties: T
     coordinates: [number, number]
 } | null
 
-export type MarkersLayerProps<T> = {
-    data: GeoJSON.FeatureCollection | string
+type MapLayerProps<T> = {
     onClick?: (properties: T) => void
     renderTooltip?: (properties: T) => React.ReactNode
     renderPopup?: (properties: T) => React.ReactNode
-    layerProps?: Omit<FilterSpecification, "id" | "source" | "type">
+    layerProps?: Omit<AddLayerObject, "id" | "source" | "type">
     filter?: FilterSpecification
 }
 
-export function MarkersLayer<T = GeoJSON.GeoJsonProperties>({
-    data,
+function MapLayer<T = GeoJSON.GeoJsonProperties>({
     onClick,
     renderTooltip,
     renderPopup,
     layerProps,
     filter,
-}: MarkersLayerProps<T>) {
+}: MapLayerProps<T>) {
     const { map, isLoaded } = useMap()
+    const { sourceId, isSourceLoaded } = useMapSource()
+
     const id = useId()
-    const sourceId = `markers-source-${id}`
     const layerId = `markers-layer-${id}`
 
     const [selectedFeature, setSelectedFeature] =
         useState<FeatureState<T>>(null)
     const [hoveredFeature, setHoveredFeature] = useState<FeatureState<T>>(null)
-
-    useEffect(() => {
-        const src = map?.getSource(sourceId) as GeoJSONSource | undefined
-        if (src) {
-            src.setData(data)
-        }
-    }, [data, map, sourceId])
 
     const handleFeatureEvent = useEffectEvent(
         (
@@ -99,14 +88,8 @@ export function MarkersLayer<T = GeoJSON.GeoJsonProperties>({
     useEffect(() => {
         if (!map || !isLoaded) return
 
-        if (!map.getSource(sourceId)) {
-            map.addSource(sourceId, {
-                type: "geojson",
-                data: data,
-            })
-        }
 
-        if (!map.getLayer(layerId)) {
+        if (isSourceLoaded && !map.getLayer(layerId)) {
             map.addLayer({
                 id: layerId,
                 source: sourceId,
@@ -123,8 +106,6 @@ export function MarkersLayer<T = GeoJSON.GeoJsonProperties>({
             if (filter) {
                 map.setFilter(layerId, filter)
             }
-
-            loadSprites(map)
         }
 
         map.on("click", layerId, handleClick)
@@ -135,15 +116,12 @@ export function MarkersLayer<T = GeoJSON.GeoJsonProperties>({
             map.off("click", layerId, handleClick)
             map.off("mouseenter", layerId, handleMouseEnter)
             map.off("mouseleave", layerId, handleMouseLeave)
-
-            try {
-                if (map.getLayer(layerId)) map.removeLayer(layerId)
-                if (map.getSource(sourceId)) map.removeSource(sourceId)
-            } catch {
-                // ignore cleanup errors
+            
+            if (map.getLayer(layerId)) {
+                map.removeLayer(layerId)
             }
         }
-    }, [map, isLoaded, sourceId, layerId])
+    }, [map, isLoaded, isSourceLoaded, sourceId, layerId])
 
     useEffect(() => {
         if (!map) return
@@ -183,3 +161,7 @@ export function MarkersLayer<T = GeoJSON.GeoJsonProperties>({
         </>
     )
 }
+
+export { MapLayer }
+
+export type { MapLayerProps }

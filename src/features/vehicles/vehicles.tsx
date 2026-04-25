@@ -6,7 +6,8 @@ import { useEffect, useMemo, useRef } from "react"
 import { useVehicles } from "./use-vehicles"
 import type { Vehicle } from "@/lib/types"
 import { VehicleCard } from "./vehicle-tooltip"
-import { MarkersLayer, type MarkersLayerProps } from "@/components/markers-layer"
+import { MapLayer, type MapLayerProps } from "@/components/map-layer"
+import { MapSource } from "@/components/map-source"
 
 function vehicleIconKey(vis: VehicleVisualization) {
     return `vehicle-${vis.icon}-#${vis.primaryColor}-${vis.secondaryColor}-${vis.isAccessible}`
@@ -31,7 +32,7 @@ function vehicleVisualization(v: Vehicle): VehicleVisualization {
 export default function VehiclesLayer({
     filter,
     tripIds,
-}: Pick<MarkersLayerProps<{ id: string }>, "filter"> & {
+}: Pick<MapLayerProps<{ id: string }>, "filter"> & {
     tripIds?: string[]
 }) {
     const { vehicles, vehiclesMap } = useVehicles({ tripIds })
@@ -54,40 +55,17 @@ export default function VehiclesLayer({
                     id: v.vehicle.vehicleId,
                     tripId: v.tripId,
                     "icon-image": vehicleIconKey(vehicleVisualization(v)),
+                    "bearing-icon-image":
+                            v.vehicle.status === "STOPPED_AT"
+                                ? "v-bearing-stopped"
+                                : "v-bearing-moving",
+                    "bearing-icon-rotate": v.vehicle.bearing,
                     color: `#${v.route?.style.vehicleIcon.color ?? v.route?.style.color}`,
                 },
             })),
         }),
         [vehicles]
     )
-
-    const vehicleBearings = useMemo(() => {
-        const collection = {
-            type: "FeatureCollection",
-            features: vehicles
-                .filter((v) => v.vehicle.bearing !== undefined)
-                .map((v) => ({
-                    type: "Feature",
-                    geometry: {
-                        type: "Point",
-                        coordinates: [
-                            v.vehicle.location.lon,
-                            v.vehicle.location.lat,
-                        ],
-                    },
-                    properties: {
-                        rotate: v.vehicle.bearing,
-                        tripId: v.tripId,
-                        "icon-image":
-                            v.vehicle.status === "STOPPED_AT"
-                                ? "v-bearing-stopped"
-                                : "v-bearing-moving",
-                    },
-                })),
-        } satisfies GeoJSON.FeatureCollection
-
-        return collection
-    }, [vehicles])
 
     useEffect(() => {
         if (!map) return
@@ -144,24 +122,25 @@ export default function VehiclesLayer({
     const navigate = useNavigate()
 
     return (
-        <>
-            <MarkersLayer<{ id: string }>
-                data={vehicleBearings}
+        
+        <MapSource data={vehicleFeatures}>
+            <MapLayer<{ id: string }>
                 filter={filter}
                 layerProps={{
                     type: "symbol",
                     minzoom: !!tripIds && tripIds.length > 0 ? undefined : 14,
                     layout: {
-                        "icon-image": ["get", "icon-image"],
+                        "icon-image": ["get", "bearing-icon-image"],
                         "icon-allow-overlap": true,
                         "icon-ignore-placement": true,
-                        "icon-rotate": ["get", "rotate"],
+                        "icon-rotate": ["get", "bearing-icon-rotate"],
+                        "icon-rotation-alignment": "map",
+                        "icon-pitch-alignment": "map",
                         "icon-size": 0.7,
                     },
                 }}
             />
-            <MarkersLayer<{ id: string }>
-                data={vehicleFeatures}
+            <MapLayer<{ id: string }>
                 filter={filter}
                 renderTooltip={(properties) => {
                     const vehicle = vehiclesMap.get(properties.id)
@@ -175,8 +154,15 @@ export default function VehiclesLayer({
                 }}
                 layerProps={{
                     minzoom: !!tripIds && tripIds.length > 0 ? undefined : 14,
+                    layout: {
+                        "icon-image": ["get", "icon-image"],
+                        "icon-allow-overlap": true,
+                        "icon-ignore-placement": true,
+                        "icon-pitch-alignment": "map",
+                    },
                 }}
             />
-        </>
+        </MapSource>
+        
     )
 }
