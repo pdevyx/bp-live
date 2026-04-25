@@ -3,7 +3,7 @@ import { cn } from "@/lib/utils"
 import { cva, type VariantProps } from "class-variance-authority"
 import type React from "react"
 
-const boxVariants = cva("flex flex-col items-center justify-center", {
+const boxVariants = cva("flex flex-col items-center justify-center shrink-0", {
     variants: {
         size: {
             default: "h-7 w-14 rounded text-base",
@@ -16,7 +16,7 @@ const boxVariants = cva("flex flex-col items-center justify-center", {
     },
 })
 
-const circleVariants = cva("flex flex-col items-center justify-center", {
+const circleVariants = cva("flex flex-col items-center justify-center shrink-0", {
     variants: {
         size: {
             default: "h-7 w-7 rounded-full text-base",

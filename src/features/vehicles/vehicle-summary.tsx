@@ -27,7 +27,7 @@ export default function VehicleSummary({
             <RouteIcon route={route} size={size} />
 
             <RouteLabel
-                text={route?.shortName ?? "?"}
+                text={route?.style?.icon?.text ?? route?.shortName ?? "?"}
                 color={{
                     backgroundColor: `#${route.style?.vehicleIcon.color ?? route.style?.color}`,
                     color: `#${route?.style?.icon.textColor}`,
@@ -37,7 +37,7 @@ export default function VehicleSummary({
             />
             <span className="font-mono text-lg">▶</span>
 
-            <span className="text-sm font-bold">{headsign}</span>
+            <span className="text-sm font-bold text-balance">{headsign}</span>
         </div>
     )
 }

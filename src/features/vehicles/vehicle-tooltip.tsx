@@ -7,7 +7,7 @@ export function VehicleCard({ vehicleData }: { vehicleData?: Vehicle }) {
     if (!vehicleData?.vehicle) return null
 
     return (
-        <Card className="min-w-40 border-muted/20 bg-background/95 shadow-lg">
+        <Card className="min-w-40 shadow-lg">
             <CardContent className="flex flex-col gap-1">
                 <VehicleSummary
                     route={vehicleData.route}
