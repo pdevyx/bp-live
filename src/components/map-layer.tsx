@@ -35,6 +35,10 @@ function MapLayer<T = GeoJSON.GeoJsonProperties>({
     const id = useId()
     const layerId = `markers-layer-${id}`
 
+    const isTouchDevice =
+        typeof window !== "undefined" &&
+        window.matchMedia("(pointer: coarse)").matches
+
     const [selectedFeature, setSelectedFeature] =
         useState<FeatureState<T>>(null)
     const [hoveredFeature, setHoveredFeature] = useState<FeatureState<T>>(null)
@@ -61,6 +65,30 @@ function MapLayer<T = GeoJSON.GeoJsonProperties>({
 
     const handleClick = useEffectEvent(
         (e: MapMouseEvent & { features?: MapGeoJSONFeature[] }) => {
+            if (!map) return
+            const features = map.queryRenderedFeatures(e.point)
+            if (features.length > 0 && features[0].layer.id !== layerId) {
+                return
+            }
+
+            const isTouch =
+                isTouchDevice ||
+                (e.originalEvent &&
+                    ("touches" in e.originalEvent ||
+                        (e.originalEvent as PointerEvent).pointerType === "touch"))
+
+            if (isTouch) {
+                if (renderTooltip) {
+                    handleFeatureEvent(e, setHoveredFeature)
+                    if (e.features?.length) {
+                        const feature = e.features[0]
+                        const coordinates = (feature.geometry as GeoJSON.Point).coordinates as [number, number]
+                        map.flyTo({ center: coordinates })
+                    }
+                }
+                return
+            }
+
             if (onClick && e.features?.length) {
                 onClick(e.features[0].properties as T)
             }
@@ -75,13 +103,28 @@ function MapLayer<T = GeoJSON.GeoJsonProperties>({
         }
     )
 
-    const handleMouseEnter = useEffectEvent(
+    const handleMapClick = useEffectEvent((e: MapMouseEvent) => {
+        if (!map || (!isTouchDevice && !hoveredFeature)) return
+        const features = map.queryRenderedFeatures(e.point)
+        if (!features.some((f) => f.layer.id === layerId)) {
+            setHoveredFeature(null)
+        }
+    })
+
+    const handleMouseMove = useEffectEvent(
         (
             e: (MapMouseEvent | MapTouchEvent) & {
                 features?: MapGeoJSONFeature[]
             }
         ) => {
-            if (!map) return
+            if (!map || isTouchDevice) return
+            
+            const features = map.queryRenderedFeatures(e.point)
+            if (features.length > 0 && features[0].layer.id !== layerId) {
+                if (hoveredFeature) setHoveredFeature(null)
+                return
+            }
+
             map.getCanvas().style.cursor = "pointer"
             if (renderTooltip) {
                 handleFeatureEvent(e, setHoveredFeature)
@@ -119,18 +162,16 @@ function MapLayer<T = GeoJSON.GeoJsonProperties>({
             }
         }
 
+        map.on("click", handleMapClick)
         map.on("click", layerId, handleClick)
-        map.on("mouseenter", layerId, handleMouseEnter)
+        map.on("mousemove", layerId, handleMouseMove)
         map.on("mouseleave", layerId, handleMouseLeave)
-        map.on("touchstart", layerId, handleMouseEnter)
-        map.on("touchend", layerId, handleMouseLeave)
 
         return () => {
+            map.off("click", handleMapClick)
             map.off("click", layerId, handleClick)
-            map.off("mouseenter", layerId, handleMouseEnter)
+            map.off("mousemove", layerId, handleMouseMove)
             map.off("mouseleave", layerId, handleMouseLeave)
-            map.off("touchstart", layerId, handleMouseEnter)
-            map.off("touchend", layerId, handleMouseLeave)
 
             if (map.getLayer(layerId)) {
                 map.removeLayer(layerId)
@@ -170,10 +211,20 @@ function MapLayer<T = GeoJSON.GeoJsonProperties>({
                     latitude={hoveredFeature.coordinates[1]}
                     closeButton={false}
                     closeOnClick={false}
-                    className="pointer-events-none border-none bg-transparent p-0 shadow-none"
+                    className={`border-none bg-transparent p-0 shadow-none ${isTouchDevice ? "pointer-events-auto" : "pointer-events-none"}`}
                     offset={15}
                 >
-                    {renderTooltip(hoveredFeature.properties)}
+                    <div
+                        onClick={(e) => {
+                            if (isTouchDevice) {
+                                e.stopPropagation()
+                                if (onClick) onClick(hoveredFeature.properties)
+                                if (renderPopup) setSelectedFeature(hoveredFeature)
+                            }
+                        }}
+                    >
+                        {renderTooltip(hoveredFeature.properties)}
+                    </div>
                 </MapPopup>
             )}
         </>
