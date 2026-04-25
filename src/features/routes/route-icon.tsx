@@ -64,9 +64,9 @@ export const vehicleIcons: IconMap = {
 const iconVariants = cva("relative z-10", {
     variants: {
         size: {
-            default: "h-7 w-7",
-            sm: "h-6 w-6",
-            xs: "h-5 w-5",
+            default: "size-7",
+            sm: "size-6",
+            xs: "size-5",
         },
     },
     defaultVariants: {
@@ -77,9 +77,9 @@ const iconVariants = cva("relative z-10", {
 const backgroundVariants = cva("absolute rounded-full", {
     variants: {
         size: {
-            default: "h-5 w-5",
-            sm: "h-4 w-4",
-            xs: "h-4 w-4",
+            default: "size-6",
+            sm: "size-5",
+            xs: "size-4",
         },
     },
     defaultVariants: {
