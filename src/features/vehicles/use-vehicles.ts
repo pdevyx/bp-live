@@ -55,8 +55,8 @@ export function useVehicles({ tripIds }: { tripIds?: string[] } = {}) {
 
     const vehicles = useMemo(() => {
         let data = undefined
-        if (!!tripIds && tripIds.length > 0 && !!vehicleForTrip.data?.data) {
-            data = vehicleForTrip.data.data
+        if (!!tripIds && tripIds.length > 0) {
+            data = vehicleForTrip.data?.data
         } else if (vehiclesForLocation.data?.data) {
             data = vehiclesForLocation.data.data
         }
@@ -80,7 +80,7 @@ export function useVehicles({ tripIds }: { tripIds?: string[] } = {}) {
                 } as Vehicle
             })
             .filter((v): v is Vehicle => !!(v.route && v.trip && v.vehicle))
-    }, [vehiclesForLocation.data, tripIds])
+    }, [vehiclesForLocation.data, vehicleForTrip.data, tripIds])
 
     const vehiclesMap = useMemo(() => {
         const map = new Map<string, Vehicle>()
