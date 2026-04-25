@@ -2,8 +2,10 @@ import { useEffect, useEffectEvent, useId, useState } from "react"
 import { MapPopup, useMap } from "./ui/map"
 import type {
     AddLayerObject,
-    FilterSpecification, MapGeoJSONFeature,
-    MapMouseEvent
+    FilterSpecification,
+    MapGeoJSONFeature,
+    MapMouseEvent,
+    MapTouchEvent,
 } from "maplibre-gl"
 import { useMapSource } from "./map-source"
 
@@ -39,7 +41,9 @@ function MapLayer<T = GeoJSON.GeoJsonProperties>({
 
     const handleFeatureEvent = useEffectEvent(
         (
-            e: MapMouseEvent & { features?: MapGeoJSONFeature[] },
+            e: (MapMouseEvent | MapTouchEvent) & {
+                features?: MapGeoJSONFeature[]
+            },
             setter: React.Dispatch<React.SetStateAction<FeatureState<T>>>
         ) => {
             if (!e.features?.length) return
@@ -64,11 +68,19 @@ function MapLayer<T = GeoJSON.GeoJsonProperties>({
             if (renderPopup) {
                 handleFeatureEvent(e, setSelectedFeature)
             }
+
+            if (!e.features?.length) {
+                setHoveredFeature(null)
+            }
         }
     )
 
     const handleMouseEnter = useEffectEvent(
-        (e: MapMouseEvent & { features?: MapGeoJSONFeature[] }) => {
+        (
+            e: (MapMouseEvent | MapTouchEvent) & {
+                features?: MapGeoJSONFeature[]
+            }
+        ) => {
             if (!map) return
             map.getCanvas().style.cursor = "pointer"
             if (renderTooltip) {
@@ -87,7 +99,6 @@ function MapLayer<T = GeoJSON.GeoJsonProperties>({
 
     useEffect(() => {
         if (!map || !isLoaded) return
-
 
         if (isSourceLoaded && !map.getLayer(layerId)) {
             map.addLayer({
@@ -111,12 +122,16 @@ function MapLayer<T = GeoJSON.GeoJsonProperties>({
         map.on("click", layerId, handleClick)
         map.on("mouseenter", layerId, handleMouseEnter)
         map.on("mouseleave", layerId, handleMouseLeave)
+        map.on("touchstart", layerId, handleMouseEnter)
+        map.on("touchend", layerId, handleMouseLeave)
 
         return () => {
             map.off("click", layerId, handleClick)
             map.off("mouseenter", layerId, handleMouseEnter)
             map.off("mouseleave", layerId, handleMouseLeave)
-            
+            map.off("touchstart", layerId, handleMouseEnter)
+            map.off("touchend", layerId, handleMouseLeave)
+
             if (map.getLayer(layerId)) {
                 map.removeLayer(layerId)
             }
@@ -126,7 +141,10 @@ function MapLayer<T = GeoJSON.GeoJsonProperties>({
     useEffect(() => {
         if (!map) return
 
-        if (map.getLayer(layerId) !== undefined && map.getFilter(layerId) !== filter) {
+        if (
+            map.getLayer(layerId) !== undefined &&
+            map.getFilter(layerId) !== filter
+        ) {
             map.setFilter(layerId, filter)
         }
     }, [map, layerId, filter])

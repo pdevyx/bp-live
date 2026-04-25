@@ -1,10 +1,11 @@
-import { Link, Outlet, createRootRoute } from "@tanstack/react-router"
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
+import { Outlet, createRootRoute } from "@tanstack/react-router"
+import { QueryClientProvider } from "@tanstack/react-query"
 import { ThemeProvider } from "@/providers/theme-provider"
 import { Map, MapControls } from "@/components/ui/map"
 import { ModeToggle } from "@/components/layout/mode-toggle"
 import { useMapBoundsSync } from "@/components/layout/use-map-bounds-sync"
 import { queryClient } from "@/lib/client"
+import Clock from "@/components/clock"
 
 export const Route = createRootRoute({
     component: RootComponent,
@@ -21,16 +22,22 @@ function RootComponent() {
         <QueryClientProvider client={queryClient}>
             <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
                 <div className="relative flex min-h-svh w-full flex-col">
-                    <div className="pointer-events-none absolute z-10 my-2 flex w-full justify-center">
-                        <div className="pointer-events-auto flex items-center gap-16 rounded-xl bg-background/90 p-4">
-                            <div className="flex items-center text-bkk-purple">
-                                <span>
-                                    Budapest
-                                    <span className="font-bold">LIVE</span>
-                                </span>
+                    <div className="absolute z-50 w-full border-b bg-card p-4">
+                        <div className="relative flex items-center justify-between gap-2">
+                            <div></div>
+                            <div className="pointer-events-none absolute right-0 left-0 flex text-bkk-purple">
+                                <div className="mx-auto flex items-center gap-1">
+                                    <span className="text-2xl">Budapest</span>
+                                    <span className="rounded bg-bkk-purple/90 px-1 font-bold text-white">
+                                        LIVE
+                                    </span>
+                                </div>
                             </div>
-                            <div className="flex items-center gap-2">
-                                <ModeToggle />
+                            <div className="flex items-center gap-4 rounded-xl">
+                                <div className="flex items-center gap-2">
+                                    <ModeToggle />
+                                </div>
+                                <Clock className="hidden sm:block" />
                             </div>
                         </div>
                     </div>
@@ -39,7 +46,7 @@ function RootComponent() {
                         zoom={15}
                         className="grow"
                         attributionControl={{
-                            customAttribution: "Adatok forrása: BKK Zrt., CC BY 4.0",
+                            customAttribution: "Data: BKK Zrt., CC BY 4.0",
                             compact: true,
                         }}
                     >

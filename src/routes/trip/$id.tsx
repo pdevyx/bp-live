@@ -1,6 +1,6 @@
 import { decode } from "@googlemaps/polyline-codec"
 import { createFileRoute } from "@tanstack/react-router"
-import { LngLatBounds } from "maplibre-gl"
+import { LngLatBounds, type PaddingOptions } from "maplibre-gl"
 import { useLayoutEffect, useMemo, useRef } from "react"
 import { MapRoute, useMap } from "@/components/ui/map"
 import TripDetails from "@/features/trips/trip-details"
@@ -9,16 +9,21 @@ import { $api } from "@/lib/client"
 import { FUTAR_API_VERSION } from "@/lib/constants"
 import StopsLayer from "@/features/stops/stops"
 import { vehicleFromTripResponse } from "@/lib/utils"
+import { useIsMobile } from "@/hooks/use-mobile"
 
 export const Route = createFileRoute("/trip/$id")({
     component: RouteComponent,
 })
+
+const MAP_BOUNDS_SMALL_PADDING = 100
+const MAP_BOUNDS_LARGE_PADDING = 500
 
 function RouteComponent() {
     const { id } = Route.useParams()
 
     const { map } = useMap()
 
+    const isMobile = useIsMobile()
     const animated = useRef(false)
 
     const { data } = $api.useQuery(
@@ -75,41 +80,41 @@ function RouteComponent() {
             new LngLatBounds(path[0], path[0])
         )
 
-        map.fitBounds(bounds, {
-            padding: {
-                top: 100,
-                bottom: 100,
-                left: 300,
-                right: 50,
-            },
-        })
+        const padding: PaddingOptions = {
+            top: MAP_BOUNDS_SMALL_PADDING,
+            bottom: isMobile ? MAP_BOUNDS_LARGE_PADDING : MAP_BOUNDS_SMALL_PADDING,
+            left: isMobile ? MAP_BOUNDS_SMALL_PADDING : MAP_BOUNDS_LARGE_PADDING,
+            right: MAP_BOUNDS_SMALL_PADDING,
+        }
+
+        map.fitBounds(bounds, { padding })
 
         animated.current = true
-    }, [map, path])
+    }, [map, path, isMobile])
 
     return (
         <>
             {data && vehicle && (
-                    <>
-                        <MapRoute
-                            coordinates={path}
-                            color={`#${vehicle.route.style.color ?? "888"}`}
-                            width={4}
-                            opacity={0.8}
-                        />
-                        <StopsLayer
-                            filter={
-                                stopIds && [
-                                    "in",
-                                    ["get", "id"],
-                                    ["literal", stopIds],
-                                ]
-                            }
-                        />
-                        <VehiclesLayer tripIds={[id]} />
-                        <TripDetails data={data.data} vehicle={vehicle} />
-                    </>
-                )}
+                <>
+                    <MapRoute
+                        coordinates={path}
+                        color={`#${vehicle.route.style.color ?? "888"}`}
+                        width={4}
+                        opacity={0.8}
+                    />
+                    <StopsLayer
+                        filter={
+                            stopIds && [
+                                "in",
+                                ["get", "id"],
+                                ["literal", stopIds],
+                            ]
+                        }
+                    />
+                    <VehiclesLayer tripIds={[id]} />
+                    <TripDetails data={data.data} vehicle={vehicle} />
+                </>
+            )}
         </>
     )
 }

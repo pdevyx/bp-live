@@ -55,11 +55,18 @@ function MapSource({
             setIsSourceLoaded(true)
         }
 
-
         loadSprites(map)
 
         return () => {
             if (map?.getSource(sourceId)) {
+                const style = map.getStyle()
+                if (style && style.layers) {
+                    style.layers.forEach((layer) => {
+                        if ("source" in layer && layer.source === sourceId) {
+                            map.removeLayer(layer.id)
+                        }
+                    })
+                }
                 map.removeSource(sourceId)
             }
             setIsSourceLoaded(false)
