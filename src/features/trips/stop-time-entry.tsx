@@ -53,7 +53,7 @@ export default function StopTimesEntry({
 
         const isPreviousTime = checkTime ? isBefore(fromUnixTime(checkTime), time) : undefined
 
-        return isPreviousTime ?? isPreviousLive ?? true
+        return isPreviousLive ?? isPreviousTime ?? true
     }, [stopSequence, data, time])
 
     const times = useMemo(() => {
