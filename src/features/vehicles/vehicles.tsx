@@ -136,7 +136,7 @@ export default function VehiclesLayer({
                         "icon-rotate": ["get", "bearing-icon-rotate"],
                         "icon-rotation-alignment": "map",
                         "icon-pitch-alignment": "map",
-                        "icon-size": 0.7,
+                        "icon-size": 0.8,
                     },
                 }}
             />
@@ -159,6 +159,7 @@ export default function VehiclesLayer({
                         "icon-allow-overlap": true,
                         "icon-ignore-placement": true,
                         "icon-pitch-alignment": "map",
+                        "icon-size": 0.5
                     },
                 }}
             />

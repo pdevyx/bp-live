@@ -114,8 +114,8 @@ export async function generateVehicleIcon(
     backgroundColorHex: string,
     isAccessible: boolean
 ): Promise<ImageData | null> {
-    const size = 64 // Overall canvas size (bounds)
-    const iconSize = 28 // Size of the central vehicle icon
+    const size = 128 // Overall canvas size (bounds)
+    const iconSize = 64 // Size of the central vehicle icon
     const offset = (size - iconSize) / 2 // Centers the icon (12px padding around)
 
     const canvas = document.createElement("canvas")
@@ -155,7 +155,7 @@ export async function generateVehicleIcon(
     ctx.drawImage(mainImg, offset, offset, iconSize, iconSize)
 
     if (isAccessible) {
-        const badgeRadius = 6
+        const badgeRadius = 12
         const badgeX = size / 2 + iconSize / 2 - badgeRadius // Bottom Right X
         const badgeY = size / 2 + iconSize / 2 - badgeRadius // Bottom Right Y
 
@@ -166,17 +166,19 @@ export async function generateVehicleIcon(
         ctx.strokeStyle = "#777777"
         ctx.stroke()
 
+        const badgeIconSize = badgeRadius * 1.5
+
         const accessElement = createElement(Accessibility, {
             color: "black",
-            width: 16,
-            height: 16,
+            width: badgeIconSize,
+            height: badgeIconSize,
         })
         const accessImg = await loadReactAsImage(
             accessElement,
             "icon-access-white"
         )
 
-        ctx.drawImage(accessImg, badgeX - 5, badgeY - 5, 10, 10)
+        ctx.drawImage(accessImg, badgeX - badgeIconSize / 2, badgeY - badgeIconSize / 2, badgeIconSize, badgeIconSize)
     }
 
     return ctx.getImageData(0, 0, size, size)
