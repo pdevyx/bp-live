@@ -33,6 +33,16 @@ export function VehicleCard({ vehicleData }: { vehicleData?: Vehicle }) {
                 {vehicleData.vehicle.status === "STOPPED_AT" && (
                     <small>The vehicle is at the stop.</small>
                 )}
+                {
+                    vehicleData.vehicle.deviated && (
+                        <small>The vehicle is deviated from its planned route.</small>
+                    )
+                }
+                {
+                    !vehicleData.vehicle.tripId && (
+                        <small>The vehicle does not serve a trip.</small>
+                    )
+                }
             </CardContent>
         </Card>
     )

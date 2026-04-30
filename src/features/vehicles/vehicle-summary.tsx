@@ -4,7 +4,7 @@ import RouteIcon from "../routes/route-icon"
 import { cn } from "@/lib/utils"
 
 export type VehicleSummaryProps = {
-    route: components["schemas"]["TransitRoute"]
+    route: components["schemas"]["TransitRoute"] | undefined
     headsign: string
     size?: "default" | "sm" | "xs"
 }
@@ -24,20 +24,27 @@ export default function VehicleSummary({
             )}
             {...props}
         >
-            <RouteIcon route={route} size={size} />
+            {route && (
+                <>
+                    <RouteIcon route={route} size={size} />
+                    <RouteLabel
+                        text={
+                            route?.style?.icon?.text ?? route?.shortName ?? "?"
+                        }
+                        color={{
+                            backgroundColor: `#${route.style?.vehicleIcon.color ?? route.style?.color}`,
+                            color: `#${route?.style?.icon.textColor}`,
+                        }}
+                        type={route?.style.icon.type ?? "BOX"}
+                        size={size}
+                    />
+                    <span className="font-mono text-lg">▶</span>
 
-            <RouteLabel
-                text={route?.style?.icon?.text ?? route?.shortName ?? "?"}
-                color={{
-                    backgroundColor: `#${route.style?.vehicleIcon.color ?? route.style?.color}`,
-                    color: `#${route?.style?.icon.textColor}`,
-                }}
-                type={route?.style.icon.type ?? "BOX"}
-                size={size}
-            />
-            <span className="font-mono text-lg">▶</span>
-
-            <span className="text-sm font-bold text-balance">{headsign}</span>
+                    <span className="text-sm font-bold text-balance">
+                        {headsign}
+                    </span>
+                </>
+            )}
         </div>
     )
 }

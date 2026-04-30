@@ -17,7 +17,7 @@ export function useStops() {
         "/{dialect}/api/where/stops-for-location",
         {
             params: {
-                path: { dialect: "otp" },
+                path: { dialect: "mobile" },
                 query: {
                     appVersion: import.meta.env.VITE_APP_VERSION ?? "1.0.0",
                     version: FUTAR_API_VERSION,
@@ -37,15 +37,15 @@ export function useStops() {
 
     const stops = useMemo(() => {
         const references = query.data?.data.references as
-            | components["schemas"]["OTPTransitReferences"]
+            | components["schemas"]["MobileTransitReferences"]
             | undefined
-        const routeDict = references?.routes ?? {}
+        const routeDict = references?.routes ?? []
 
         const stops =
             query.data?.data.list.map((s) => {
                 return {
                     ...s,
-                    routes: s.routeIds.map((routeId) => routeDict[routeId]),
+                    routes: s.routeIds.map((routeId) => routeDict.find((r) => r.id === routeId)).filter((r) => !!r),
                 }
             }) ?? ([] satisfies MappedStop[])
 

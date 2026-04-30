@@ -22,7 +22,7 @@ export type VehicleVisualization = {
 
 function vehicleVisualization(v: Vehicle): VehicleVisualization {
     return {
-         icon: (v.vehicle.style?.icon?.name ?? v.route?.type ?? "BUS").replaceAll("-", "_"),
+         icon: (v.vehicle.style?.icon?.name ?? v.route?.type ?? "BUS").replaceAll("inactive-", "").replaceAll("-", "_"),
          primaryColor: v.vehicle.style?.icon?.color ?? "888888",
          secondaryColor: v.vehicle.style?.icon?.secondaryColor ?? "ffffff",
          isAccessible: v.vehicle.wheelchairAccessible ?? false
@@ -149,8 +149,8 @@ export default function VehiclesLayer({
                 }}
                 onClick={(properties) => {
                     const vehicle = vehiclesMap.get(properties.id)
-                    if (!vehicle) return
-                    navigate({ to: `/trip/${vehicle.tripId}`, from: "/" })
+                    if (!vehicle || !vehicle.tripId) return
+                    navigate({ to: `/trip/${vehicle.tripId}/${vehicle.vehicle.serviceDate}`, from: "/" })
                 }}
                 layerProps={{
                     minzoom: !!tripIds && tripIds.length > 0 ? undefined : 14,

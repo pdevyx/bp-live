@@ -2,7 +2,6 @@ import type { components } from "@/lib/api/v1"
 import { cn, formatTime } from "@/lib/utils"
 import { useMemo } from "react"
 import StopTime from "./stop-time"
-import type { Vehicle } from "@/lib/types"
 import { isBefore, fromUnixTime } from "date-fns"
 import { useTime } from "@/hooks/use-time"
 
@@ -11,8 +10,8 @@ export type TripStopTimes =
 
 export type StopTimesEntryProps = {
     data: TripStopTimes
-    vehicle: Vehicle
-    stop: components["schemas"]["TransitStop"]
+    route: components["schemas"]["TransitRoute"] | undefined
+    stop: components["schemas"]["TransitStop"] | undefined
     stopSequence: number | undefined
 }
 
@@ -28,11 +27,15 @@ export type FormattedStopTimes = {
 
 export default function StopTimesEntry({
     data,
-    vehicle,
+    route,
     stop,
     stopSequence,
 }: StopTimesEntryProps) {
     const time = useTime()
+
+    if (!stop) {
+        return null
+    }
 
     const isPrevious = useMemo(() => {
         const arrival = data.predictedArrivalTime ?? data.arrivalTime
@@ -96,13 +99,13 @@ export default function StopTimesEntry({
             <span
                 className="absolute top-4 right-0 bottom-0 left-0 ms-2 h-full w-1 bg-ring"
                 style={{
-                    backgroundColor: isPrevious ? undefined : `#${vehicle?.route?.style.color ?? "222222"}`,
+                    backgroundColor: isPrevious ? undefined : `#${route?.style.color ?? "222222"}`,
                 }}
             />
             <span
                 className="z-10 mt-1 h-3 w-3 rounded-full border-2 bg-background border-ring"
                 style={{
-                    borderColor: isPrevious ? undefined : `#${vehicle?.route?.style.color ?? "222222"}`,
+                    borderColor: isPrevious ? undefined : `#${route?.style.color ?? "222222"}`,
                 }}
             />
             <span className="flex flex-col items-center">

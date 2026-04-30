@@ -1,9 +1,10 @@
 import { useMemo } from "react"
 import { useMapStore } from "@/store/map.store"
 import { FUTAR_API_VERSION } from "@/lib/constants"
-import type { Vehicle } from "@/lib/types"
+import type { OptionalVehicle, Vehicle } from "@/lib/types"
 import { keepPreviousData } from "@tanstack/react-query"
 import { $api } from "@/lib/client"
+import type { components } from "@/lib/api/v1"
 
 export function useVehicles({ tripIds }: { tripIds?: string[] } = {}) {
     const bounds = useMapStore((state) => state.bounds)
@@ -13,7 +14,7 @@ export function useVehicles({ tripIds }: { tripIds?: string[] } = {}) {
         "/{dialect}/api/where/vehicles-for-location",
         {
             params: {
-                path: { dialect: "otp" },
+                path: { dialect: "mobile" },
                 query: {
                     appVersion: import.meta.env.VITE_APP_VERSION ?? "1.0.0",
                     version: FUTAR_API_VERSION,
@@ -34,7 +35,7 @@ export function useVehicles({ tripIds }: { tripIds?: string[] } = {}) {
         "/{dialect}/api/where/vehicle-for-trip",
         {
             params: {
-                path: { dialect: "otp" },
+                path: { dialect: "mobile" },
                 query: {
                     appVersion: import.meta.env.VITE_APP_VERSION ?? "1.0.0",
                     version: FUTAR_API_VERSION,
@@ -64,22 +65,25 @@ export function useVehicles({ tripIds }: { tripIds?: string[] } = {}) {
         if (!data) return []
 
         const vehiclesList = data.list ?? []
-        const references = data.references
-        const routes = references?.routes ?? {}
-        const trips = references?.trips ?? {}
+        const references: components["schemas"]["MobileTransitReferences"] = data.references
+        const routes = references?.routes ?? []
+        const trips = references?.trips ?? []
+
 
         return vehiclesList
-            .map((vehicle) => {
+        .map((vehicle) => {
+                const route = routes.find((r) => r.id === vehicle.routeId)
+                const trip = trips.find((t) => t.id === vehicle.tripId)
+
                 return {
                     headsign: vehicle.label,
-                    tripId: trips[vehicle.tripId ?? ""]?.id,
-                    routeId: routes[vehicle.routeId ?? ""]?.id,
+                    tripId: trip?.id,
+                    routeId: route?.id,
                     vehicle,
-                    route: routes[vehicle.routeId ?? ""],
-                    trip: trips[vehicle.tripId ?? ""],
+                    route: route,
+                    trip: trip,
                 } as Vehicle
             })
-            .filter((v): v is Vehicle => !!(v.route && v.trip && v.vehicle))
     }, [vehiclesForLocation.data, vehicleForTrip.data, tripIds])
 
     const vehiclesMap = useMemo(() => {

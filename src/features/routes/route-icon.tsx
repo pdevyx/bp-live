@@ -27,6 +27,9 @@ export const routeIcons: IconMap = {
     BUS: {
         icon: BusFull,
     },
+    NIGHT_BUS: {
+        icon: BusFull,
+    },
     TROLLEYBUS: {
         icon: TrolleyFull,
     },

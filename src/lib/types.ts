@@ -1,5 +1,13 @@
 import type { components } from "./api/v1"
 
+export type WithMobileReferences<T> = Omit<T, "references"> & {
+    references?: components["schemas"]["MobileTransitReferences"]
+}
+
+export type TripDetailsResponse = WithMobileReferences<
+    components["schemas"]["TransitEntryWithReferencesTransitTripDetailsOTP"]
+>
+
 export type VehicleStyle = {
     icon: {
         color: string
@@ -26,8 +34,12 @@ export type Vehicle = {
     routeId: string | undefined
     // style: VehicleStyle,
     vehicle: components["schemas"]["TransitVehicle"]
-    route: components["schemas"]["TransitRoute"]
-    trip: components["schemas"]["TransitTrip"]
+    route: components["schemas"]["TransitRoute"] | undefined
+    trip: components["schemas"]["TransitTrip"] | undefined
+}
+
+export type OptionalVehicle = Omit<Vehicle, "vehicle"> & {
+    vehicle: Vehicle["vehicle"] | undefined
 }
 
 export type BoundingBox = {

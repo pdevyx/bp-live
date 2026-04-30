@@ -10,43 +10,43 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as TripIdRouteImport } from './routes/trip/$id'
+import { Route as TripIdDateRouteImport } from './routes/trip/$id.$date'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const TripIdRoute = TripIdRouteImport.update({
-  id: '/trip/$id',
-  path: '/trip/$id',
+const TripIdDateRoute = TripIdDateRouteImport.update({
+  id: '/trip/$id/$date',
+  path: '/trip/$id/$date',
   getParentRoute: () => rootRouteImport,
 } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/trip/$id': typeof TripIdRoute
+  '/trip/$id/$date': typeof TripIdDateRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/trip/$id': typeof TripIdRoute
+  '/trip/$id/$date': typeof TripIdDateRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/trip/$id': typeof TripIdRoute
+  '/trip/$id/$date': typeof TripIdDateRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/trip/$id'
+  fullPaths: '/' | '/trip/$id/$date'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/trip/$id'
-  id: '__root__' | '/' | '/trip/$id'
+  to: '/' | '/trip/$id/$date'
+  id: '__root__' | '/' | '/trip/$id/$date'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  TripIdRoute: typeof TripIdRoute
+  TripIdDateRoute: typeof TripIdDateRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -58,11 +58,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/trip/$id': {
-      id: '/trip/$id'
-      path: '/trip/$id'
-      fullPath: '/trip/$id'
-      preLoaderRoute: typeof TripIdRouteImport
+    '/trip/$id/$date': {
+      id: '/trip/$id/$date'
+      path: '/trip/$id/$date'
+      fullPath: '/trip/$id/$date'
+      preLoaderRoute: typeof TripIdDateRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
@@ -70,7 +70,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  TripIdRoute: TripIdRoute,
+  TripIdDateRoute: TripIdDateRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

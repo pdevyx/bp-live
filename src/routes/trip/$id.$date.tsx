@@ -10,8 +10,9 @@ import { FUTAR_API_VERSION } from "@/lib/constants"
 import StopsLayer from "@/features/stops/stops"
 import { vehicleFromTripResponse } from "@/lib/utils"
 import { useIsMobile } from "@/hooks/use-mobile"
+import type { TripDetailsResponse } from "@/lib/types"
 
-export const Route = createFileRoute("/trip/$id")({
+export const Route = createFileRoute("/trip/$id/$date")({
     component: RouteComponent,
 })
 
@@ -19,26 +20,27 @@ const MAP_BOUNDS_SMALL_PADDING = 100
 const MAP_BOUNDS_LARGE_PADDING = 500
 
 function RouteComponent() {
-    const { id } = Route.useParams()
+    const { id, date } = Route.useParams()
 
     const { map } = useMap()
 
     const isMobile = useIsMobile()
     const animated = useRef(false)
 
-    const { data } = $api.useQuery(
+    const queryResult = $api.useQuery(
         "get",
         "/{dialect}/api/where/trip-details",
         {
             params: {
                 path: {
-                    dialect: "otp",
+                    dialect: "mobile",
                 },
                 query: {
                     appVersion: import.meta.env.VITE_APP_VERSION ?? "1.0.0",
                     version: FUTAR_API_VERSION,
                     key: import.meta.env.VITE_FUTAR_API_KEY,
                     tripId: id,
+                    date: date,
                 },
             },
         },
@@ -47,8 +49,10 @@ function RouteComponent() {
         }
     )
 
+    const data = queryResult.data?.data as TripDetailsResponse | undefined
+
     const path: Array<[number, number]> = useMemo(() => {
-        const points = data?.data.entry.polyline?.points
+        const points = data?.entry.polyline?.points
 
         if (!points) {
             return []
@@ -62,12 +66,12 @@ function RouteComponent() {
     }, [data])
 
     const vehicle = useMemo(
-        () => data && vehicleFromTripResponse(data.data),
+        () => data && vehicleFromTripResponse(data),
         [data]
     )
 
     const stopIds = useMemo(() => {
-        return data && data.data.entry.stopTimes.map((st) => st.stopId)
+        return data && data.entry.stopTimes.map((st) => st.stopId)
     }, [data])
 
     useLayoutEffect(() => {
@@ -87,14 +91,14 @@ function RouteComponent() {
             right: MAP_BOUNDS_SMALL_PADDING,
         }
 
-        map.fitBounds(bounds, { padding })
+        map.fitBounds(bounds, { padding, maxZoom: 14 })
 
         animated.current = true
     }, [map, path, isMobile])
 
     return (
         <>
-            {data && vehicle && (
+            {data && vehicle?.route && (
                 <>
                     <MapRoute
                         coordinates={path}
@@ -112,7 +116,7 @@ function RouteComponent() {
                         }
                     />
                     <VehiclesLayer tripIds={[id]} />
-                    <TripDetails data={data.data} vehicle={vehicle} />
+                    <TripDetails data={data} vehicle={vehicle} />
                 </>
             )}
         </>

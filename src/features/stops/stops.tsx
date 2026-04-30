@@ -7,7 +7,15 @@ import { Card, CardContent } from "@/components/ui/card"
 import RouteList from "../routes/route-list"
 import { MapSource } from "@/components/map-source"
 
-export default function StopsLayer({ filter }: Pick<MapLayerProps, "filter">) {
+type StopProperties = {
+    id: string
+    "icon-image": string
+    rotate: number
+    "bearing-rotate": number
+    routeIds: string[]
+}
+
+export default function StopsLayer({ filter }: Pick<MapLayerProps<StopProperties>, "filter">) {
     const { stops, stopsMap, data } = useStops()
     const { map, isLoaded } = useMap()
 
@@ -24,8 +32,8 @@ export default function StopsLayer({ filter }: Pick<MapLayerProps, "filter">) {
                         : `ring-${s.style.colors.join("-")}`,
                     rotate: s.style.image ? 0 : parseInt(s.direction, 10) || 0,
                     "bearing-rotate": parseInt(s.direction, 10) || 0,
-                    routeIds: s.routeIds
-                },
+                    routeIds: s.routeIds,
+                } satisfies StopProperties,
             })),
         } satisfies GeoJSON.FeatureCollection
 
@@ -96,7 +104,7 @@ export default function StopsLayer({ filter }: Pick<MapLayerProps, "filter">) {
             <MapLayer
                 filter={filter}
                 renderTooltip={(properties) => {
-                    const stop = stopsMap.get(properties.id)
+                    const stop = properties && stopsMap.get(properties.id)
                     if (!stop) return null
 
                     return (
