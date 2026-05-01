@@ -6,6 +6,8 @@ import { ModeToggle } from "@/components/layout/mode-toggle"
 import { useMapBoundsSync } from "@/components/layout/use-map-bounds-sync"
 import { queryClient } from "@/lib/client"
 import Clock from "@/components/clock"
+import Logo from "@/components/logo"
+import Loading from "@/components/loading"
 
 export const Route = createRootRoute({
     component: RootComponent,
@@ -25,13 +27,8 @@ function RootComponent() {
                     <div className="absolute z-50 w-full border-b bg-card p-4">
                         <div className="relative flex items-center justify-between gap-2">
                             <div></div>
-                            <div className="pointer-events-none absolute right-0 left-0 flex text-bkk-purple">
-                                <div className="mx-auto flex items-center gap-1">
-                                    <span className="text-2xl">Budapest</span>
-                                    <span className="rounded bg-bkk-purple/90 px-1 font-bold text-white">
-                                        LIVE
-                                    </span>
-                                </div>
+                            <div className="pointer-events-none absolute right-0 left-0 flex">
+                                <Logo />
                             </div>
                             <div className="flex items-center gap-4 rounded-xl">
                                 <div className="flex items-center gap-2">
@@ -41,6 +38,7 @@ function RootComponent() {
                             </div>
                         </div>
                     </div>
+
                     <Map
                         center={[19.0551266, 47.4985022]}
                         zoom={15}
@@ -52,6 +50,7 @@ function RootComponent() {
                     >
                         <MapControls showLocate={true} showCompass={true} />
                         <AppMap />
+                        <Loading />
                     </Map>
                 </div>
             </ThemeProvider>
