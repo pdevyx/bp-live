@@ -10,7 +10,7 @@ type StopProperties = {
     id: string
     "icon-image": string
     rotate: number
-    "bearing-rotate": number
+    "bearing-rotate": number | null
     routeIds: string[]
 }
 
@@ -32,7 +32,7 @@ export default function StopsLayer({
                         ? s.style.image
                         : `ring-${s.style.colors.join("-")}`,
                     rotate: s.style.image ? 0 : parseInt(s.direction, 10) || 0,
-                    "bearing-rotate": parseInt(s.direction, 10) || 0,
+                    "bearing-rotate": parseInt(s.direction, 10) || null,
                     routeIds: s.routeIds,
                 } satisfies StopProperties,
             })),
@@ -75,7 +75,7 @@ export default function StopsLayer({
     return (
         <MapSource data={stopFeatures}>
             <MapLayer
-                filter={filter}
+                filter={["!=", ["get", "bearing-rotate"], null]}
                 layerProps={{
                     type: "symbol",
                     minzoom: 12,
