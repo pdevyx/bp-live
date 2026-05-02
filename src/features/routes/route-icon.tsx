@@ -5,6 +5,7 @@ import TramFull from "@/assets/icons/tram_outer.svg?react"
 import RailroadFull from "@/assets/icons/railroad_full.svg?react"
 import SuburbanRailwayFull from "@/assets/icons/hev.svg?react"
 import Metro from "@/assets/icons/metro.svg?react"
+import Duna from "@/assets/icons/duna.svg?react"
 
 import type { components } from "@/lib/api/v1"
 import type { FunctionComponent, SVGProps } from "react"
@@ -49,6 +50,9 @@ export const routeIcons: IconMap = {
     SUBWAY: {
         icon: Metro,
     },
+    FERRY: {
+        icon: Duna
+    }
 }
 
 export const vehicleIcons: IconMap = {
