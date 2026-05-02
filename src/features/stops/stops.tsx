@@ -11,6 +11,7 @@ type StopProperties = {
     "icon-image": string
     rotate: number
     "bearing-rotate": number | null
+    "bearing-image": string | null
     routeIds: string[]
 }
 
@@ -23,19 +24,26 @@ export default function StopsLayer({
     const stopFeatures = useMemo(() => {
         const collection = {
             type: "FeatureCollection",
-            features: stops.map((s) => ({
-                type: "Feature",
-                geometry: { type: "Point", coordinates: [s.lon, s.lat] },
-                properties: {
-                    id: s.id,
-                    "icon-image": s.style.image?.includes("stop-icon-M")
-                        ? s.style.image
-                        : `ring-${s.style.colors.join("-")}`,
-                    rotate: s.style.image ? 0 : parseInt(s.direction, 10) || 0,
-                    "bearing-rotate": parseInt(s.direction, 10) || null,
-                    routeIds: s.routeIds,
-                } satisfies StopProperties,
-            })),
+            features: stops.map((s) => {
+                const direction = parseInt(s.direction, 10)
+
+                return {
+                    type: "Feature",
+                    geometry: { type: "Point", coordinates: [s.lon, s.lat] },
+                    properties: {
+                        id: s.id,
+                        "icon-image": s.style.image?.includes("stop-icon-M")
+                            ? s.style.image
+                            : `ring-${s.style.colors.join("-")}`,
+                        rotate: s.style.image
+                            ? 0
+                            : direction || 0,
+                        "bearing-rotate": direction || null,
+                        "bearing-image": direction ? "bearing" : null,
+                        routeIds: s.routeIds,
+                    } satisfies StopProperties,
+                }
+            }),
         } satisfies GeoJSON.FeatureCollection
 
         return collection
@@ -75,12 +83,12 @@ export default function StopsLayer({
     return (
         <MapSource data={stopFeatures}>
             <MapLayer
-                filter={["!=", ["get", "bearing-rotate"], null]}
+                filter={filter}
                 layerProps={{
                     type: "symbol",
                     minzoom: 12,
                     layout: {
-                        "icon-image": "bearing",
+                        "icon-image": ["get", "bearing-image"],
                         "icon-allow-overlap": true,
                         "icon-ignore-placement": true,
                         "icon-size": [
