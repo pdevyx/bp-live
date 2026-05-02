@@ -3,7 +3,7 @@ import { drawBearing, generateVehicleIcon } from "@/lib/map/icon-renderer"
 import { useNavigate } from "@tanstack/react-router"
 import { useEffect, useMemo, useRef } from "react"
 
-import { useVehicles } from "./use-vehicles"
+import { useVehicles } from "@/hooks/use-vehicles"
 import type { Vehicle } from "@/lib/types"
 import { VehicleCard } from "./vehicle-tooltip"
 import { MapLayer, type MapLayerProps } from "@/components/map-layer"

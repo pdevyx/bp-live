@@ -1,11 +1,10 @@
-import { useStops } from "./use-stops"
+import { useStops } from "@/hooks/use-stops"
 import { useEffect, useMemo } from "react"
 import { MapLayer, type MapLayerProps } from "@/components/map-layer"
 import { useMap } from "@/components/ui/map"
 import { createMultiColorRing, drawBearing } from "@/lib/map/icon-renderer"
-import { Card, CardContent } from "@/components/ui/card"
-import RouteList from "../routes/route-list"
 import { MapSource } from "@/components/map-source"
+import StopTooltip from "./stop-tooltip"
 
 type StopProperties = {
     id: string
@@ -15,9 +14,11 @@ type StopProperties = {
     routeIds: string[]
 }
 
-export default function StopsLayer({ filter }: Pick<MapLayerProps<StopProperties>, "filter">) {
-    const { stops, stopsMap, data } = useStops()
-    const { map, isLoaded } = useMap()
+export default function StopsLayer({
+    filter,
+}: Pick<MapLayerProps<StopProperties>, "filter">) {
+    const { stops, stopsMap } = useStops()
+    const { map } = useMap()
 
     const stopFeatures = useMemo(() => {
         const collection = {
@@ -107,20 +108,7 @@ export default function StopsLayer({ filter }: Pick<MapLayerProps<StopProperties
                     const stop = properties && stopsMap.get(properties.id)
                     if (!stop) return null
 
-                    return (
-                        <Card className="max-w-2xs">
-                            <CardContent className="flex flex-col gap-2">
-                                <p className="text-sm font-semibold">
-                                    {stop.name}
-                                </p>
-                                {/* <p>{stop.id}</p>
-                                <pre>parent: {stop.parentStationId}</pre>
-                                <p>{JSON.stringify(stop.style, undefined, 2)}</p>
-                                <p>{stop.direction}</p> */}
-                                <RouteList routes={stop.routes} />
-                            </CardContent>
-                        </Card>
-                    )
+                    return <StopTooltip stop={stop} />
                 }}
                 layerProps={{
                     type: "symbol",

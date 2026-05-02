@@ -1,5 +1,5 @@
 import type { components } from "@/lib/api/v1"
-import { cn, formatTime } from "@/lib/utils"
+import { cn, formatTimeSeconds, getFormattedStopTimes } from "@/lib/utils"
 import { useMemo } from "react"
 import StopTime from "./stop-time"
 import { isBefore, fromUnixTime } from "date-fns"
@@ -16,7 +16,7 @@ export type StopTimesEntryProps = {
 }
 
 export type StopTime = {
-    time: string | undefined
+    time: number | undefined
     isPredicted: boolean
 }
 
@@ -30,7 +30,9 @@ export default function StopTimesEntry({
     route,
     stop,
     stopSequence,
-}: StopTimesEntryProps) {
+    className,
+    ...props
+}: React.ComponentProps<"div"> & StopTimesEntryProps) {
     const time = useTime()
 
     if (!stop) {
@@ -54,39 +56,15 @@ export default function StopTimesEntry({
             checkTime = departure
         }
 
-        const isPreviousTime = checkTime ? isBefore(fromUnixTime(checkTime), time) : undefined
+        const isPreviousTime = checkTime
+            ? isBefore(fromUnixTime(checkTime), time)
+            : undefined
 
         return isPreviousLive ?? isPreviousTime ?? true
     }, [stopSequence, data, time])
 
     const times = useMemo(() => {
-        const arrivalTime = formatTime(data.arrivalTime)
-        const departureTime = formatTime(data.departureTime)
-        const predictedArrivalTime = formatTime(data.predictedArrivalTime)
-        const predictedDepartureTime = formatTime(data.predictedDepartureTime)
-
-        return {
-            arrivalTime:
-                predictedArrivalTime !== undefined
-                    ? {
-                          time: predictedArrivalTime,
-                          isPredicted: true,
-                      }
-                    : {
-                          time: arrivalTime,
-                          isPredicted: false,
-                      },
-            departureTime:
-                predictedDepartureTime !== undefined
-                    ? {
-                          time: predictedDepartureTime,
-                          isPredicted: true,
-                      }
-                    : {
-                          time: departureTime,
-                          isPredicted: false,
-                      },
-        } satisfies FormattedStopTimes
+        return getFormattedStopTimes(data)
     }, [
         data.arrivalTime,
         data.departureTime,
@@ -95,23 +73,34 @@ export default function StopTimesEntry({
     ])
 
     return (
-        <div className="font-md relative flex items-start gap-2 px-1 py-2 font-noto text-sm first:[&>span:first-of-type]:mt-2 last:[&>span:first-of-type]:h-1">
+        <div
+            className={cn(
+                className,
+                "font-md relative flex items-start gap-2 px-1 py-2 font-noto text-sm first:[&>span:first-of-type]:mt-2 last:[&>span:first-of-type]:h-1"
+            )}
+            {...props}
+        >
             <span
                 className="absolute top-4 right-0 bottom-0 left-0 ms-2 h-full w-1 bg-ring"
                 style={{
-                    backgroundColor: isPrevious ? undefined : `#${route?.style.color ?? "222222"}`,
+                    backgroundColor: isPrevious
+                        ? undefined
+                        : `#${route?.style.color ?? "222222"}`,
                 }}
             />
             <span
-                className="z-10 mt-1 h-3 w-3 rounded-full border-2 bg-background border-ring"
+                className="z-10 mt-1 h-3 w-3 rounded-full border-2 border-ring bg-background"
                 style={{
-                    borderColor: isPrevious ? undefined : `#${route?.style.color ?? "222222"}`,
+                    borderColor: isPrevious
+                        ? undefined
+                        : `#${route?.style.color ?? "222222"}`,
                 }}
             />
+
             <span className="flex flex-col items-center">
                 {times.arrivalTime.time !== undefined && (
                     <StopTime
-                        value={times.arrivalTime.time}
+                        time={times.arrivalTime.time}
                         predicted={times.arrivalTime.isPredicted}
                         isPrevious={isPrevious}
                     />
@@ -120,7 +109,7 @@ export default function StopTimesEntry({
                 {times.departureTime.time !== times.arrivalTime.time &&
                     times.departureTime.time !== undefined && (
                         <StopTime
-                            value={times.departureTime.time}
+                            time={times.departureTime.time}
                             predicted={times.departureTime.isPredicted}
                             isPrevious={isPrevious}
                         />
@@ -134,7 +123,7 @@ export default function StopTimesEntry({
             >
                 {stop.name}{" "}
                 {stop.platformCode && (
-                    <div className="flex h-5 w-5 items-center justify-center rounded-full bg-orange-500 text-xs text-white shrink-0">
+                    <div className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-orange-500 text-xs text-white">
                         <span className="pt-px font-mono leading-none">
                             {stop.platformCode}
                         </span>

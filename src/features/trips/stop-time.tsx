@@ -1,16 +1,22 @@
-import { cn } from "@/lib/utils"
+import { cn, formatTimeSeconds, formatTimeUntil } from "@/lib/utils"
 
 export type StopTimeProps = {
-    value: string
+    time: number
     predicted: boolean
     isPrevious: boolean
+    compact?: boolean
 }
 
 export default function StopTime({
-    value,
+    time,
     predicted,
     isPrevious,
+    compact = false
 }: StopTimeProps) {
+    const value = compact ? formatTimeUntil(time) : formatTimeSeconds(time)
+
+    if (!value) return null
+
     return (
         <span
             className={cn(

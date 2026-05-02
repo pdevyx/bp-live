@@ -8,6 +8,10 @@ export type TripDetailsResponse = WithMobileReferences<
     components["schemas"]["TransitEntryWithReferencesTransitTripDetailsOTP"]
 >
 
+export type StopArrivalsAndDeparturesResponse = WithMobileReferences<
+    components["schemas"]["TransitEntryWithReferencesTransitArrivalsAndDepartures"]
+>
+
 export type VehicleStyle = {
     icon: {
         color: string

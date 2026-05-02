@@ -2,12 +2,39 @@ import type { components } from "@/lib/api/v1"
 import RouteLabel from "../routes/route-label"
 import RouteIcon from "../routes/route-icon"
 import { cn } from "@/lib/utils"
+import { cva } from "class-variance-authority"
 
 export type VehicleSummaryProps = {
     route: components["schemas"]["TransitRoute"] | undefined
     headsign: string
     size?: "default" | "sm" | "xs"
 }
+
+const triangleVariants = cva("font-mono", {
+    variants: {
+        size: {
+            default: "text-lg",
+            sm: "text-lg",
+            xs: "text-sm",
+        },
+    },
+    defaultVariants: {
+        size: "default",
+    },
+})
+
+const headsignVariants = cva("text-balance", {
+    variants: {
+        size: {
+            default: "text-sm font-bold",
+            sm: "text-xs",
+            xs: "text-xs",
+        },
+    },
+    defaultVariants: {
+        size: "default",
+    },
+})
 
 export default function VehicleSummary({
     route,
@@ -38,9 +65,9 @@ export default function VehicleSummary({
                         type={route?.style.icon.type ?? "BOX"}
                         size={size}
                     />
-                    <span className="font-mono text-lg">▶</span>
+                    <span className={triangleVariants({ size })}>▶</span>
 
-                    <span className="text-sm font-bold text-balance">
+                    <span className={headsignVariants({ size })}>
                         {headsign}
                     </span>
                 </>

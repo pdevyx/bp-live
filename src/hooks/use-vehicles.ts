@@ -50,7 +50,7 @@ export function useVehicles({ tripIds }: { tripIds?: string[] } = {}) {
             refetchInterval: 5000,
             placeholderData: keepPreviousData,
             staleTime: Infinity,
-            gcTime: Infinity
+            gcTime: Infinity,
         }
     )
 
@@ -65,25 +65,24 @@ export function useVehicles({ tripIds }: { tripIds?: string[] } = {}) {
         if (!data) return []
 
         const vehiclesList = data.list ?? []
-        const references: components["schemas"]["MobileTransitReferences"] = data.references
+        const references: components["schemas"]["MobileTransitReferences"] =
+            data.references
         const routes = references?.routes ?? []
         const trips = references?.trips ?? []
 
+        return vehiclesList.map((vehicle) => {
+            const route = routes.find((r) => r.id === vehicle.routeId)
+            const trip = trips.find((t) => t.id === vehicle.tripId)
 
-        return vehiclesList
-        .map((vehicle) => {
-                const route = routes.find((r) => r.id === vehicle.routeId)
-                const trip = trips.find((t) => t.id === vehicle.tripId)
-
-                return {
-                    headsign: vehicle.label,
-                    tripId: trip?.id,
-                    routeId: route?.id,
-                    vehicle,
-                    route: route,
-                    trip: trip,
-                } as Vehicle
-            })
+            return {
+                headsign: vehicle.label,
+                tripId: trip?.id,
+                routeId: route?.id,
+                vehicle,
+                route: route,
+                trip: trip,
+            } as Vehicle
+        })
     }, [vehiclesForLocation.data, vehicleForTrip.data, tripIds])
 
     const vehiclesMap = useMemo(() => {

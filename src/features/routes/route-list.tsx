@@ -26,11 +26,11 @@ export default function RouteList({
                 <div key={i} className="relative flex flex-col">
                     <RouteIcon
                         className="absolute"
-                        size="sm"
+                        size="xs"
                         route={value[0]}
                     />
 
-                    <div className="ms-7 flex flex-wrap items-center gap-1">
+                    <div className="ms-6.5 flex flex-wrap items-center gap-1">
                         {value.map((r, i) => (
                             <RouteLabel
                                 key={i}
@@ -39,7 +39,7 @@ export default function RouteList({
                                     color: `#${r.style?.icon.textColor}`,
                                 }}
                                 text={r.style?.icon.text}
-                                size="sm"
+                                size="xs"
                                 type={r.style.icon.type}
                             />
                         ))}

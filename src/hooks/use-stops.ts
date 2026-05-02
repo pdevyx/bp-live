@@ -45,7 +45,7 @@ export function useStops() {
             query.data?.data.list.map((s) => {
                 return {
                     ...s,
-                    routes: s.routeIds.map((routeId) => routeDict.find((r) => r.id === routeId)).filter((r) => !!r),
+                    routes: s.routeIds.map((routeId) => routeDict.find((r) => r.id === routeId)).filter((r) => r !== undefined),
                 }
             }) ?? ([] satisfies MappedStop[])
 
