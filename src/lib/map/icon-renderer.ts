@@ -1,8 +1,9 @@
 import {
     routeIcons,
+    staticIcons,
     vehicleIcons,
     type RouteIcon,
-} from "@/features/routes/route-icon"
+} from "./icons"
 import { Accessibility } from "lucide-react"
 import { createElement } from "react"
 import { renderToStaticMarkup } from "react-dom/server"
@@ -99,6 +100,50 @@ async function loadReactAsImage(
     })
 }
 
+export async function generateStopIcon(type: keyof typeof staticIcons) {
+    const size = 128 // Overall canvas size (bounds)
+    const iconSize = 40 // Size of the central vehicle icon
+    const offset = (size - iconSize) / 2 // Centers the icon (12px padding around)
+
+    const canvas = document.createElement("canvas")
+    canvas.width = size
+    canvas.height = size
+    const ctx = canvas.getContext("2d")
+    if (!ctx) return null
+
+    let stopIcon = staticIcons[type]
+
+    if (!stopIcon) {
+        console.warn(`No icon found for route type ${type}, using default.`)
+
+        stopIcon = staticIcons["stop-icon-M1"]
+    }
+
+    const {
+        icon: IconComponent,
+        primaryColor,
+        secondaryColor,
+    } = stopIcon
+
+    const iconElement = createElement(IconComponent, {
+        fill: `#${primaryColor}`,
+        width: iconSize,
+        height: iconSize,
+    })
+
+    const cacheKey = type
+    const mainImg = await loadReactAsImage(iconElement, cacheKey)
+
+    ctx.beginPath()
+    ctx.arc(size / 2, size / 2, iconSize / 2 - 1, 0, Math.PI * 2)
+    ctx.fillStyle = `#${secondaryColor}`
+    ctx.fill()
+
+    ctx.drawImage(mainImg, offset, offset, iconSize, iconSize)
+
+    return ctx.getImageData(0, 0, size, size)
+}
+
 /**
  * Generates a vehicle icon as ImageData based on the route type, colors, and accessibility features.
  *
@@ -112,7 +157,7 @@ export async function generateVehicleIcon(
     type: string,
     colorHex: string,
     backgroundColorHex: string,
-    isAccessible: boolean
+    isAccessible: boolean,
 ): Promise<ImageData | null> {
     const size = 128 // Overall canvas size (bounds)
     const iconSize = 64 // Size of the central vehicle icon

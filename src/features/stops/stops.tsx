@@ -53,7 +53,7 @@ export default function StopsLayer({
         if (!map) return
 
         if (!map.hasImage("bearing")) {
-            const bearing = drawBearing("#444444")
+            const bearing = drawBearing("#999999")
 
             if (!bearing) throw Error(`Failed to draw icon image for bearing`)
 

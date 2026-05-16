@@ -13,7 +13,7 @@ export default function TripDetails({
     vehicle: OptionalVehicle
 }) {
     return (
-        <div className="absolute bottom-0 z-10 flex min-h-1/3 max-h-1/2 w-full flex-col items-center gap-2 rounded-tl-xl rounded-tr-xl bg-card pt-4 sm:w-fit sm:rounded-none sm:rounded-tr-xl lg:top-16 lg:max-h-screen lg:max-w-1/3 lg:rounded-none">
+        <div className="absolute bottom-0 z-10 flex min-h-1/3 max-h-1/2 w-full flex-col items-center gap-2 rounded-tl-xl rounded-tr-xl bg-card pt-4 sm:w-fit sm:rounded-none sm:rounded-tr-xl lg:top-16 lg:max-h-screen lg:max-w-1/3">
             <div className="flex w-full items-center justify-between gap-2 px-4">
                 {
                     vehicle.route ? (

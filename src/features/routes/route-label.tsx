@@ -9,6 +9,8 @@ const boxVariants = cva("flex flex-col items-center justify-center shrink-0", {
             default: "h-7 w-14 rounded text-base",
             sm: "h-6 w-12 rounded text-sm",
             xs: "h-5 w-10 rounded text-xs",
+            xl: "h-10 w-20 rounded text-2xl",
+            "4xl": "h-32 w-64 rounded-xl text-8xl",
         },
     },
     defaultVariants: {
@@ -22,6 +24,8 @@ const circleVariants = cva("flex flex-col items-center justify-center shrink-0",
             default: "h-7 w-7 rounded-full text-base",
             sm: "h-6 w-6 rounded-full text-sm",
             xs: "h-5 w-5 rounded-full text-xs",
+            xl: "h-10 w-10 rounded-full text-2xl",
+            "4xl": "h-32 w-32 rounded-full text-8xl",
         },
     },
     defaultVariants: {

@@ -24,17 +24,17 @@ function RootComponent() {
         <QueryClientProvider client={queryClient}>
             <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
                 <div className="relative flex min-h-svh w-full flex-col">
-                    <div className="absolute z-50 w-full border-b bg-card p-4">
-                        <div className="relative flex items-center justify-between gap-2">
-                            <div></div>
-                            <div className="pointer-events-none absolute right-0 left-0 flex">
+                    <div className="absolute z-50 w-full p-2 pointer-events-none">
+                        <div className="relative flex items-center justify-center sm:justify-between gap-2 rounded-xl">
+                            <div className="sm:flex items-center gap-4 hidden rounded-xl py-2 px-3 bg-card pointer-events-auto">
                                 <Logo />
                             </div>
-                            <div className="flex items-center gap-4 rounded-xl">
-                                <div className="flex items-center gap-2">
+                            <div className="flex items-center gap-4 rounded-xl py-2 px-3 bg-card pointer-events-auto">
+                                <div className="flex items-center gap-4">
+                                    <Clock className="hidden sm:block"/>
+                                    <Logo className="sm:hidden"/>
                                     <ModeToggle />
                                 </div>
-                                <Clock className="hidden sm:block" />
                             </div>
                         </div>
                     </div>
@@ -47,6 +47,7 @@ function RootComponent() {
                             customAttribution: "Data: BKK Zrt., CC BY 4.0",
                             compact: true,
                         }}
+                        minZoom={6}
                     >
                         <MapControls showLocate={true} showCompass={true} />
                         <AppMap />

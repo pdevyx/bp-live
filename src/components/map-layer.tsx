@@ -199,6 +199,7 @@ function MapLayer<T = GeoJSON.GeoJsonProperties>({
                     onClose={() => setSelectedFeature(null)}
                     closeOnClick={false}
                     offset={10}
+                    anchor="bottom"
                     closeButton
                 >
                     {renderPopup(selectedFeature.properties)}
@@ -213,6 +214,7 @@ function MapLayer<T = GeoJSON.GeoJsonProperties>({
                     closeOnClick={false}
                     className={`border-none bg-transparent p-0 shadow-none ${isTouchDevice ? "pointer-events-auto" : "pointer-events-none"}`}
                     offset={15}
+                    anchor="bottom"
                 >
                     <div
                         onClick={(e) => {

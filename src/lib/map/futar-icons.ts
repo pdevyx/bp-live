@@ -1,4 +1,6 @@
 import type { components } from "../api/v1"
+import { generateStopIcon } from "./icon-renderer"
+import { staticIcons } from "./icons"
 
 export type SpriteData = {
     name: string
@@ -77,26 +79,17 @@ export const SPRITES = {
     },
 } satisfies SpriteSource
 
-export function loadSprites(
+export async function loadSprites(
     map: maplibregl.Map,
-    spriteSource: SpriteSource = SPRITES
 ) {
-    Object.keys(spriteSource).forEach((key) => {
-        const data =
-            spriteSource[key as components["schemas"]["TransitRoute"]["type"]]
-
-        if (!map.hasImage(key) && data) {
-            const url = `https://futar.bkk.hu/api/ui-service/v1/icon?name=${data.name}${data.color ? `&color=${data.color}` : ""}${data.secondaryColor ? `&secondaryColor=${data.secondaryColor}` : ""}${data.scale ? `&scale=${data.scale}` : ""}`
-
-            map.loadImage(url)
-                .then((image) => {
-                    if (image && !map.hasImage(key)) {
-                        map.addImage(key, image.data)
-                    }
-                })
-                .catch((error) => {
-                    console.error("Failed to load map image:", error)
-                })
+    await Promise.all(Object.keys(staticIcons).map(async (key) => {
+        if (!map.hasImage(key)) {
+            const img = await generateStopIcon(key as keyof typeof staticIcons)
+            
+            if (img && !map.hasImage(key)) {
+                map.addImage(key, img)
+            }
+               
         }
-    })
+    }))
 }

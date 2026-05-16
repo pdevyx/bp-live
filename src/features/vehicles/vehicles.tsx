@@ -71,7 +71,7 @@ export default function VehiclesLayer({
         if (!map) return
 
         if (!map.hasImage("v-bearing-moving")) {
-            const bearing = drawBearing("#888888")
+            const bearing = drawBearing("#999999")
 
             if (!bearing) throw Error(`Failed to draw icon image for bearing`)
 
@@ -136,7 +136,7 @@ export default function VehiclesLayer({
                         "icon-rotate": ["get", "bearing-icon-rotate"],
                         "icon-rotation-alignment": "map",
                         "icon-pitch-alignment": "map",
-                        "icon-size": 0.8,
+                        "icon-size": 0.7,
                     },
                 }}
             />
@@ -159,7 +159,7 @@ export default function VehiclesLayer({
                         "icon-allow-overlap": true,
                         "icon-ignore-placement": true,
                         "icon-pitch-alignment": "map",
-                        "icon-size": 0.5
+                        "icon-size": 0.45
                     },
                 }}
             />

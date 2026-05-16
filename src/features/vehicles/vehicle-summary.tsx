@@ -2,12 +2,12 @@ import type { components } from "@/lib/api/v1"
 import RouteLabel from "../routes/route-label"
 import RouteIcon from "../routes/route-icon"
 import { cn } from "@/lib/utils"
-import { cva } from "class-variance-authority"
+import { cva, type VariantProps } from "class-variance-authority"
 
 export type VehicleSummaryProps = {
     route: components["schemas"]["TransitRoute"] | undefined
     headsign: string
-    size?: "default" | "sm" | "xs"
+    icon?: boolean
 }
 
 const triangleVariants = cva("font-mono", {
@@ -16,6 +16,8 @@ const triangleVariants = cva("font-mono", {
             default: "text-lg",
             sm: "text-lg",
             xs: "text-sm",
+            xl: "text-2xl",
+            "4xl": "text-7xl",
         },
     },
     defaultVariants: {
@@ -29,6 +31,8 @@ const headsignVariants = cva("text-balance", {
             default: "text-sm font-bold",
             sm: "text-xs",
             xs: "text-xs",
+            xl: "text-2xl",
+            "4xl": "text-6xl font-bold",
         },
     },
     defaultVariants: {
@@ -41,8 +45,9 @@ export default function VehicleSummary({
     headsign,
     className,
     size = "default",
+    icon = true,
     ...props
-}: React.ComponentProps<"div"> & VehicleSummaryProps) {
+}: React.ComponentProps<"div"> & VehicleSummaryProps & VariantProps<typeof headsignVariants> ) {
     return (
         <div
             className={cn(
@@ -53,7 +58,7 @@ export default function VehicleSummary({
         >
             {route && (
                 <>
-                    <RouteIcon route={route} size={size} />
+                   { icon && <RouteIcon route={route} size={size} />}
                     <RouteLabel
                         text={
                             route?.style?.icon?.text ?? route?.shortName ?? "?"

@@ -52,10 +52,9 @@ function MapSource({
                 data: data,
             })
             
-            setIsSourceLoaded(true)
+            loadSprites(map).then(() => setIsSourceLoaded(true))
         }
 
-        loadSprites(map)
 
         return () => {
             if (map?.getSource(sourceId)) {
