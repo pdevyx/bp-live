@@ -31,7 +31,7 @@ const headsignVariants = cva("text-balance", {
             default: "text-sm font-bold",
             sm: "text-xs",
             xs: "text-xs",
-            xl: "text-2xl",
+            xl: "text-2xl font-bold",
             "4xl": "text-6xl font-bold",
         },
     },

@@ -3,8 +3,7 @@ import { twMerge } from "tailwind-merge"
 import {
     fromUnixTime,
     format,
-    intlFormatDistance,
-    formatDistance,
+    isBefore,
 } from "date-fns"
 import type { components } from "./api/v1"
 import type { OptionalVehicle, TripDetailsResponse } from "./types"
@@ -108,4 +107,33 @@ export function vehicleFromTripResponse(
         route,
         trip,
     }
+}
+
+export function isPreviousStop(
+    data: StopTimeEntry,
+    vehicleStopSequence: number | undefined,
+    time: Date
+
+) {
+    const arrival = data.predictedArrivalTime ?? data.arrivalTime
+    const departure = data.predictedDepartureTime ?? data.departureTime
+
+    const isPreviousLive =
+        vehicleStopSequence !== undefined && data.stopSequence !== undefined
+            ? vehicleStopSequence > data.stopSequence
+            : undefined
+
+    let checkTime
+
+    if (arrival !== undefined) {
+        checkTime = arrival
+    } else if (departure !== undefined) {
+        checkTime = departure
+    }
+
+    const isPreviousTime = checkTime
+        ? isBefore(fromUnixTime(checkTime), time)
+        : undefined
+
+    return isPreviousLive ?? isPreviousTime ?? true
 }
